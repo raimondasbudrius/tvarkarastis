@@ -1,0 +1,1142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🏫 Pamokų Tvarkaraštis</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            background-color: #e8f0fe;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 10px;
+        }
+
+        .header-bar {
+            background: linear-gradient(135deg, #1a73e8, #1557b0);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 12px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .header-bar h2 { margin: 0; font-size: 1.2rem; }
+        .current-time { font-size: 1.1rem; font-weight: bold; }
+
+        .filter-bar {
+            background: white;
+            padding: 10px 15px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .filter-bar label { font-size: 0.75rem; font-weight: 600; color: #555; margin-right: 2px; }
+        .filter-bar select {
+            font-size: 0.75rem;
+            padding: 3px 6px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            max-width: 160px;
+        }
+
+        .filter-active {
+            border-color: #1a73e8 !important;
+            background-color: #e8f0fe !important;
+        }
+
+        .clear-filters-btn {
+            font-size: 0.7rem;
+            padding: 3px 8px;
+            border-radius: 5px;
+            border: 1px solid #dc3545;
+            background: #dc3545;
+            color: white;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        .clear-filters-btn:hover { background: #bb2d3b; }
+
+        .day-selector {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .day-btn {
+            padding: 8px 16px;
+            border: 2px solid #1a73e8;
+            border-radius: 8px;
+            background: white;
+            color: #1a73e8;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.8rem;
+        }
+
+        .day-btn:hover { background: #e8f0fe; }
+        .day-btn.active { background: #1a73e8; color: white; }
+        .day-btn.today { border-color: #34a853; color: #34a853; }
+        .day-btn.today.active { background: #34a853; border-color: #34a853; color: white; }
+
+        .timeline-container {
+            background: white;
+            border-radius: 12px;
+            overflow-x: auto;
+            overflow-y: visible;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            padding: 8px;
+        }
+
+        .timeline-table {
+            width: 100%;
+            min-width: 500px;
+            border-collapse: collapse;
+            font-size: 0.6rem;
+        }
+
+        .timeline-table th {
+            background: #f8f9fa;
+            padding: 6px 4px;
+            border: 1px solid #dee2e6;
+            font-size: 0.65rem;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .timeline-table td {
+            border: 1px solid #e0e0e0;
+            padding: 2px 2px;
+            text-align: center;
+            vertical-align: middle;
+            height: auto;
+            min-width: 55px;
+            max-width: 95px;
+            transition: all 0.3s;
+            font-size: 0.58rem;
+        }
+
+        .period-header {
+            background: #f0f4f8;
+            font-weight: bold;
+            width: 55px;
+            min-width: 55px;
+        }
+
+        .period-header .period-num { font-size: 0.8rem; color: #1a73e8; }
+        .period-header .period-time { font-size: 0.55rem; color: #666; }
+        .period-header .period-break { font-size: 0.5rem; color: #999; }
+
+        .class-row td:first-child {
+            background: #f0f4f8;
+            font-weight: bold;
+            font-size: 0.75rem;
+            color: #1a73e8;
+            width: 42px;
+            min-width: 42px;
+            max-width: 42px;
+            position: sticky;
+            left: 0;
+            z-index: 5;
+        }
+
+        .lesson-cell {
+            cursor: pointer;
+            position: relative;
+        }
+
+        .lesson-cell.has-lesson {
+            background: #e8f5e9;
+            border-color: #a5d6a7;
+        }
+
+        .lesson-cell.is-current {
+            background: #fff9c4;
+            border: 2px solid #ffd600;
+            box-shadow: inset 0 0 10px rgba(255, 214, 0, 0.3);
+            animation: pulse-current 2s infinite;
+        }
+
+        .lesson-cell.is-break {
+            background: #e3f2fd;
+            border: 2px solid #90caf9;
+        }
+
+        .break-indicator {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #1a73e8;
+            font-size: 0.65rem;
+            font-weight: bold;
+        }
+
+        .lesson-cell.is-past {
+            background: #f5f5f5;
+            opacity: 0.7;
+        }
+
+        .lesson-cell.is-future {
+            background: #fafafa;
+        }
+
+        @keyframes pulse-current {
+            0%, 100% { box-shadow: inset 0 0 10px rgba(255, 214, 0, 0.3); }
+            50% { box-shadow: inset 0 0 20px rgba(255, 214, 0, 0.5); }
+        }
+
+        .lesson-info {
+            font-size: 0.6rem;
+            line-height: 1.15;
+        }
+
+        .lesson-class {
+            font-weight: 700;
+            color: #2e7d32;
+            font-size: 0.62rem;
+            white-space: nowrap;
+        }
+
+        .lesson-teacher {
+            color: #555;
+            font-size: 0.58rem;
+            padding-left: 0;
+            white-space: nowrap;
+            display: inline;
+        }
+
+        .lesson-room {
+            display: inline-block;
+            background: #1a73e8;
+            color: white;
+            padding: 0px 3px;
+            border-radius: 3px;
+            font-size: 0.55rem;
+            margin-top: 2px;
+        }
+
+        .room-badge {
+            display: inline-block;
+            background: #1a73e8;
+            color: white;
+            padding: 0px 2px;
+            border-radius: 2px;
+            font-size: 0.48rem;
+            margin-left: 1px;
+            white-space: nowrap;
+            vertical-align: middle;
+        }
+
+        .split-badge {
+            display: inline-block;
+            background: #ff9800;
+            color: white;
+            padding: 0px 2px;
+            border-radius: 2px;
+            font-size: 0.48rem;
+            font-weight: bold;
+            margin-left: 1px;
+            white-space: nowrap;
+            vertical-align: middle;
+        }
+
+        .no-lesson {
+            color: #ccc;
+            font-size: 0.6rem;
+        }
+
+        .current-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background: #ffd600;
+            border-radius: 50%;
+            margin-right: 3px;
+            vertical-align: middle;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        .legend {
+            margin-top: 8px;
+            padding: 6px 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            font-size: 0.65rem;
+        }
+
+        .legend-title { font-weight: bold; margin-bottom: 3px; }
+        .legend-items { display: flex; gap: 10px; flex-wrap: wrap; }
+        .legend-item { display: flex; align-items: center; gap: 5px; }
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+        }
+
+        #loading {
+            text-align: center;
+            padding: 50px;
+        }
+
+        .error-msg {
+            background: #ffebee;
+            color: #c62828;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .filter-count {
+            font-size: 0.65rem;
+            color: #666;
+            margin-left: 5px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="header-bar">
+    <div>
+        <h2>Molėtų progimnazijos pamokų tvarkaraštis</h2>
+        <div id="headerDay" style="font-size:0.85rem;opacity:0.85;margin-top:3px;"></div>
+    </div>
+    <div id="countdown" style="text-align:center;font-size:0.9rem;">
+        <div id="countdownLabel" style="font-size:0.75rem;opacity:0.8;">Pamoka</div>
+        <div id="countdownTime" style="font-weight:bold;">--:--</div>
+    </div>
+    <div class="current-time" id="clock">--:--:--</div>
+</div>
+
+<div id="loading">
+    <div class="spinner-border text-primary" role="status"></div>
+    <p class="mt-3">Kraunami duomenys...</p>
+</div>
+
+<div id="error-container" class="error-msg" style="display:none;"></div>
+
+<div id="app" style="display:none;">
+    <div class="filter-bar" id="filterBar">
+        <label>🔍 Filtruoti:</label>
+        <select id="filterTeacher">
+            <option value="">Visi mokytojai</option>
+        </select>
+        <select id="filterSubject">
+            <option value="">Visi dalykai</option>
+        </select>
+        <select id="filterRoom">
+            <option value="">Visos klasės</option>
+        </select>
+        <select id="filterClass">
+            <option value="">Visos klasės</option>
+        </select>
+        <button class="clear-filters-btn" onclick="clearFilters()">✕ Išvalyti</button>
+        <span class="filter-count" id="filterCount"></span>
+    </div>
+
+    <div class="day-selector" id="daySelector"></div>
+
+    <div class="timeline-container">
+        <table class="timeline-table" id="timelineTable">
+            <thead>
+                <tr>
+                    <th class="period-header">Klasė</th>
+                </tr>
+            </thead>
+            <tbody id="timelineBody"></tbody>
+        </table>
+    </div>
+
+    <div class="legend">
+        <div class="legend-title">Legenda:</div>
+        <div class="legend-items">
+            <div class="legend-item">
+                <div class="legend-color" style="background:#e8f5e9;border-color:#a5d6a7;"></div>
+                <span>Pamoka vyksta</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background:#fff9c4;border:2px solid #ffd600;"></div>
+                <span>Dabartinė pamoka</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background:#f5f5f5;"></div>
+                <span>Pamoka praėjo</span>
+            </div>
+            <div class="legend-item">
+                <span style="color:#1a73e8;font-weight:700;font-size:1.1rem;">*</span>
+                <span>Pamoka Molėtų baseine</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Schedule data: { teacherName: { dayIndex(0-4): [{ period: 1-8, class: "5a", teacher: "...", subject: "..." }] } }
+    let scheduleByClass = {}; // { className: { dayIndex: [{ period, teacher, subject, room }] } }
+    let allClasses = [];
+    let selectedDay = new Date().getDay(); // 0=Sun, 1=Mon...
+    let refreshInterval;
+
+    // Filter state
+    let activeFilters = { teacher: '', subject: '', room: '', class: '' };
+    let allTeachers = new Set();
+    let allSubjects = new Set();
+    let allRooms = new Set();
+
+    // Period times (actual school schedule with breaks)
+    const PERIOD_TIMES = [
+        null, // 0-index placeholder
+        { start: "8:00", end: "8:45", breakAfter: "10" },
+        { start: "8:55", end: "9:40", breakAfter: "15" },
+        { start: "9:55", end: "10:40", breakAfter: "15" },
+        { start: "10:55", end: "11:40", breakAfter: "25" },
+        { start: "12:05", end: "12:50", breakAfter: "10" },
+        { start: "13:00", end: "13:45", breakAfter: "5" },
+        { start: "13:50", end: "14:35", breakAfter: "" },
+        { start: "14:40", end: "15:25", breakAfter: "" }
+    ];
+
+    const DAY_NAMES = ['', 'Pirmadienis', 'Antradienis', 'Trečiadienis', 'Ketvirtadienis', 'Penktadienis', 'Šeštadienis', 'Sekmadienis'];
+    const DAY_NAMES_SHORT = ['Sek', 'Pr', 'An', 'Tr', 'Kt', 'Pn', 'Št'];
+
+    // Only valid base classes
+    const VALID_CLASSES = [
+        '5a', '5b', '5c', '5d',
+        '6a', '6b', '6c', '6d',
+        '7a', '7b', '7c', '7d',
+        '8a', '8b', '8c', '8d'
+    ];
+
+    // Normalize class name: "8c1" → "8c", "5a2" → "5a"
+    function normalizeClass(name) {
+        return name.replace(/\d+$/, '').toLowerCase();
+    }
+
+    // Abbreviate teacher name: "Tūba Arūnas" → "A. Tūba"
+    function abbreviateName(fullName) {
+        const parts = fullName.trim().split(/\s+/);
+        if (parts.length >= 2) {
+            const lastName = parts[0];
+            const firstName = parts[1];
+            return `${firstName.charAt(0)}. ${lastName}`;
+        }
+        return fullName;
+    }
+
+    // Get split suffix: "8c1" → "1", "5a" → ""
+    function getSplitSuffix(name) {
+        const match = name.match(/\d+$/);
+        return match ? match[0] : '';
+    }
+
+    // Parse combined class names
+    function parseClassNames(name) {
+        const suffix = getSplitSuffix(name);
+        const baseName = normalizeClass(name);
+
+        const combinedMatch = baseName.match(/^(\d)([a-z]+)$/i);
+        if (combinedMatch) {
+            const grade = combinedMatch[1];
+            const letters = combinedMatch[2];
+            const classes = [];
+            for (const letter of letters) {
+                const cls = `${grade}${letter}`;
+                if (VALID_CLASSES.includes(cls)) {
+                    classes.push({ name: cls, suffix: suffix });
+                }
+            }
+            return classes;
+        }
+
+        if (VALID_CLASSES.includes(baseName)) {
+            return [{ name: baseName, suffix: suffix }];
+        }
+        return [];
+    }
+
+    // Legend codes
+    const LEGEND_CODES = {
+        'K': 'Konsultacija',
+        '-': 'Logopedinės pratybos',
+        'KV': 'Klasės valandėlė / išvyka',
+        'I': 'Integruotos pamokos',
+        'B': 'Pamoka baseine',
+        'LK': 'Lietuvių k. užsieniečiams',
+        'KP': 'Keitimas',
+        'GP': 'Gimnazistų pamoka progimnazijoje'
+    };
+
+    // CSV parser
+    function parseCSV(text) {
+        const rows = [];
+        let current = '', inQuotes = false;
+        let row = [];
+        for (let i = 0; i < text.length; i++) {
+            const char = text[i];
+            if (char === '"') { inQuotes = !inQuotes; }
+            else if (char === ',' && !inQuotes) { row.push(current.trim()); current = ''; }
+            else if ((char === '\n' || char === '\r') && !inQuotes) {
+                if (char === '\r' && text[i + 1] === '\n') i++;
+                row.push(current.trim());
+                if (row.some(cell => cell)) rows.push(row);
+                row = []; current = '';
+            } else { current += char; }
+        }
+        row.push(current.trim());
+        if (row.some(cell => cell)) rows.push(row);
+        return rows;
+    }
+
+    // Fetch and parse data
+    async function fetchData() {
+        const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTH3SfQ4BkInzJNhJiZ_OxJ9QxCKdcQHHn-HPGg6UrZitqrx9fkNo42hjQZ808m4T2jiQYnNaBL0lNs/pub?gid=1201117612&single=true&output=csv";
+
+        const proxies = [
+            `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(SHEET_CSV_URL)}`,
+            `https://thingproxy.freeboard.io/fetch/${encodeURIComponent(SHEET_CSV_URL)}`,
+            `https://api.allorigins.win/raw?url=${encodeURIComponent(SHEET_CSV_URL)}`
+        ];
+
+        let csvText = null;
+        let lastError = null;
+
+        for (const proxyUrl of proxies) {
+            try {
+                const response = await fetch(proxyUrl, { signal: AbortSignal.timeout(10000) });
+                if (response.ok) {
+                    csvText = await response.text();
+                    if (csvText.trim().length > 10) break;
+                }
+            } catch (err) { lastError = err; }
+        }
+
+        if (!csvText) throw lastError || new Error('Visi proxy neveikia');
+        return parseCSV(csvText);
+    }
+
+    // Parse schedule data from rows
+    function parseSchedule(rows) {
+        const LESSONS_PER_DAY = 8;
+        const LESSON_START_COL = 5;
+        const scheduleByTeacher = {};
+        const classesSet = new Set();
+
+        let currentTeacherName = '';
+        const teacherLastRoom = {};
+
+        const poolMarkers = {};
+
+        for (let i = 1; i < rows.length; i++) {
+            const cells = rows[i];
+            let teacherName = (cells[1] || '').trim();
+            const subject = (cells[2] || '').trim();
+            let classroom = (cells[4] || '').trim();
+
+            if (!teacherName) {
+                if (currentTeacherName && subject && !subject.includes('Konsultacij')) {
+                    teacherName = currentTeacherName;
+                    if (!classroom && teacherLastRoom[teacherName]) {
+                        classroom = teacherLastRoom[teacherName];
+                    }
+                } else {
+                    continue;
+                }
+            } else {
+                currentTeacherName = teacherName;
+                if (classroom) {
+                    teacherLastRoom[teacherName] = classroom;
+                }
+            }
+
+            if (!scheduleByTeacher[teacherName]) {
+                scheduleByTeacher[teacherName] = {};
+            }
+
+            for (let dayIndex = 0; dayIndex < 5; dayIndex++) {
+                const dayStartCol = LESSON_START_COL + (dayIndex * LESSONS_PER_DAY);
+                const dayLessons = [];
+                const jsDay = dayIndex + 1;
+
+                for (let p = 0; p < LESSONS_PER_DAY; p++) {
+                    const cellValue = (cells[dayStartCol + p] || '').trim();
+                    if (cellValue === 'B') {
+                        if (!poolMarkers[teacherName]) poolMarkers[teacherName] = {};
+                        if (!poolMarkers[teacherName][jsDay]) poolMarkers[teacherName][jsDay] = {};
+                        poolMarkers[teacherName][jsDay][p + 1] = true;
+                    }
+                }
+
+                for (let p = 0; p < LESSONS_PER_DAY; p++) {
+                    const cellValue = (cells[dayStartCol + p] || '').trim();
+                    if (cellValue && cellValue !== 'B') {
+                        const parts = cellValue.split(/\s*\/\s*/).map(s => s.trim()).filter(Boolean);
+
+                        parts.forEach(part => {
+                            const parsedClasses = parseClassNames(part);
+                            const isLegendCode = LEGEND_CODES[part];
+
+                            if (isLegendCode && part !== 'B') {
+                                parsedClasses.forEach(cls => {
+                                    classesSet.add(cls.name);
+                                    dayLessons.push({
+                                        period: p + 1,
+                                        class: cls.name,
+                                        teacher: teacherName,
+                                        subject: LEGEND_CODES[part],
+                                        room: '',
+                                        isLegend: true,
+                                        splitSuffix: cls.suffix,
+                                        originalClass: part,
+                                        isPool: false
+                                    });
+                                });
+                                if (parsedClasses.length === 0) {
+                                    dayLessons.push({
+                                        period: p + 1,
+                                        class: part,
+                                        teacher: teacherName,
+                                        subject: LEGEND_CODES[part],
+                                        room: '',
+                                        isLegend: true,
+                                        splitSuffix: '',
+                                        originalClass: part,
+                                        isPool: false
+                                    });
+                                }
+                            } else {
+                                parsedClasses.forEach(cls => {
+                                    classesSet.add(cls.name);
+                                    dayLessons.push({
+                                        period: p + 1,
+                                        class: cls.name,
+                                        teacher: teacherName,
+                                        subject: subject,
+                                        room: classroom,
+                                        isLegend: false,
+                                        splitSuffix: cls.suffix,
+                                        originalClass: part,
+                                        isPool: poolMarkers[teacherName]?.[jsDay]?.[p + 1] || false
+                                    });
+                                });
+                            }
+                        });
+                    }
+                }
+
+                if (dayLessons.length > 0) {
+                    if (!scheduleByTeacher[teacherName][jsDay]) {
+                        scheduleByTeacher[teacherName][jsDay] = [];
+                    }
+                    scheduleByTeacher[teacherName][jsDay] = scheduleByTeacher[teacherName][jsDay].concat(dayLessons);
+                }
+            }
+        }
+
+        allClasses = VALID_CLASSES;
+
+        scheduleByClass = {};
+        VALID_CLASSES.forEach(cls => {
+            scheduleByClass[cls] = {};
+        });
+
+        Object.entries(scheduleByTeacher).forEach(([teacherName, days]) => {
+            Object.entries(days).forEach(([dayIndex, lessons]) => {
+                lessons.forEach(lesson => {
+                    if (lesson.isLegend && lesson.class === lesson.originalClass) {
+                        VALID_CLASSES.forEach(cls => {
+                            if (!scheduleByClass[cls][dayIndex]) {
+                                scheduleByClass[cls][dayIndex] = [];
+                            }
+                            const classLesson = { ...lesson, class: cls };
+                            scheduleByClass[cls][dayIndex].push(classLesson);
+                        });
+                    } else if (lesson.class && scheduleByClass[lesson.class]) {
+                        if (!scheduleByClass[lesson.class][dayIndex]) {
+                            scheduleByClass[lesson.class][dayIndex] = [];
+                        }
+                        scheduleByClass[lesson.class][dayIndex].push(lesson);
+                    }
+                });
+            });
+        });
+
+        // Collect unique filter values
+        allTeachers = new Set();
+        allSubjects = new Set();
+        allRooms = new Set();
+
+        Object.values(scheduleByClass).forEach(days => {
+            Object.values(days).forEach(lessons => {
+                lessons.forEach(l => {
+                    allTeachers.add(l.teacher);
+                    allSubjects.add(l.subject);
+                    if (l.room) allRooms.add(l.room);
+                });
+            });
+        });
+
+        populateFilterDropdowns();
+    }
+
+    // Populate filter dropdowns
+    function populateFilterDropdowns() {
+        const teacherSelect = document.getElementById('filterTeacher');
+        const subjectSelect = document.getElementById('filterSubject');
+        const roomSelect = document.getElementById('filterRoom');
+        const classSelect = document.getElementById('filterClass');
+
+        // Save current selections
+        const currentTeacher = teacherSelect.value;
+        const currentSubject = subjectSelect.value;
+        const currentRoom = roomSelect.value;
+        const currentClass = classSelect.value;
+
+        // Teachers
+        teacherSelect.innerHTML = '<option value="">Visi mokytojai</option>';
+        Array.from(allTeachers).sort().forEach(t => {
+            const opt = document.createElement('option');
+            opt.value = t;
+            opt.textContent = abbreviateName(t);
+            teacherSelect.appendChild(opt);
+        });
+
+        // Subjects
+        subjectSelect.innerHTML = '<option value="">Visi dalykai</option>';
+        Array.from(allSubjects).sort().forEach(s => {
+            const opt = document.createElement('option');
+            opt.value = s;
+            opt.textContent = s;
+            subjectSelect.appendChild(opt);
+        });
+
+        // Rooms
+        roomSelect.innerHTML = '<option value="">Visos klasės</option>';
+        Array.from(allRooms).sort().forEach(r => {
+            const opt = document.createElement('option');
+            opt.value = r;
+            opt.textContent = `Kab. ${r}`;
+            roomSelect.appendChild(opt);
+        });
+
+        // Classes
+        classSelect.innerHTML = '<option value="">Visos klasės</option>';
+        VALID_CLASSES.forEach(cls => {
+            const opt = document.createElement('option');
+            opt.value = cls;
+            opt.textContent = cls.toUpperCase();
+            classSelect.appendChild(opt);
+        });
+
+        // Restore selections
+        teacherSelect.value = currentTeacher;
+        subjectSelect.value = currentSubject;
+        roomSelect.value = currentRoom;
+        classSelect.value = currentClass;
+    }
+
+    // Apply filters
+    function applyFilters(lessons) {
+        return lessons.filter(l => {
+            if (activeFilters.teacher && l.teacher !== activeFilters.teacher) return false;
+            if (activeFilters.subject && l.subject !== activeFilters.subject) return false;
+            if (activeFilters.room && l.room !== activeFilters.room) return false;
+            if (activeFilters.class && l.class !== activeFilters.class) return false;
+            return true;
+        });
+    }
+
+    // Clear filters
+    function clearFilters() {
+        activeFilters = { teacher: '', subject: '', room: '', class: '' };
+        document.getElementById('filterTeacher').value = '';
+        document.getElementById('filterSubject').value = '';
+        document.getElementById('filterRoom').value = '';
+        document.getElementById('filterClass').value = '';
+        updateFilterStyles();
+        renderTimeline();
+    }
+
+    function updateFilterStyles() {
+        ['filterTeacher', 'filterSubject', 'filterRoom', 'filterClass'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el.value) {
+                el.classList.add('filter-active');
+            } else {
+                el.classList.remove('filter-active');
+            }
+        });
+
+        const count = Object.values(activeFilters).filter(v => v).length;
+        document.getElementById('filterCount').textContent = count > 0 ? `${count} filtrai` : '';
+    }
+
+    // Setup filter event listeners
+    function setupFilters() {
+        ['filterTeacher', 'filterSubject', 'filterRoom', 'filterClass'].forEach(id => {
+            document.getElementById(id).addEventListener('change', function() {
+                const key = id.replace('filter', '').toLowerCase();
+                activeFilters[key] = this.value;
+                updateFilterStyles();
+                renderTimeline();
+            });
+        });
+    }
+
+    // Build UI
+    function buildDaySelector() {
+        const selector = document.getElementById('daySelector');
+        selector.innerHTML = '';
+        const today = new Date().getDay();
+
+        for (let i = 1; i <= 5; i++) {
+            const btn = document.createElement('button');
+            btn.className = 'day-btn';
+            btn.dataset.day = i;
+
+            let label = DAY_NAMES_SHORT[i];
+            btn.innerHTML = label;
+
+            if (i === selectedDay) btn.classList.add('active');
+            if (i === today) btn.classList.add('today');
+
+            btn.addEventListener('click', () => {
+                selectedDay = i;
+                document.querySelectorAll('.day-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                renderTimeline();
+                updateHeaderDay();
+            });
+
+            selector.appendChild(btn);
+        }
+    }
+
+    function getCurrentPeriod() {
+        const now = new Date();
+        const hours = now.getHours();
+        const minutes = now.getMinutes();
+        const currentTime = hours * 60 + minutes;
+
+        for (let p = 1; p <= 8; p++) {
+            if (PERIOD_TIMES[p]) {
+                const [startH, startM] = PERIOD_TIMES[p].start.split(':').map(Number);
+                const [endH, endM] = PERIOD_TIMES[p].end.split(':').map(Number);
+                const startTime = startH * 60 + startM;
+                const endTime = endH * 60 + endM;
+
+                if (currentTime >= startTime && currentTime < endTime) return p;
+                if (currentTime < startTime) return 0;
+
+                if (PERIOD_TIMES[p] && PERIOD_TIMES[p].breakAfter) {
+                    const breakMin = parseInt(PERIOD_TIMES[p].breakAfter) || 0;
+                    const breakEnd = endTime + breakMin;
+                    if (currentTime < breakEnd) return p + 0.5;
+                }
+            }
+        }
+        return 9;
+    }
+
+    function renderTimeline() {
+        const table = document.getElementById('timelineTable');
+        const tbody = document.getElementById('timelineBody');
+
+        let headerHTML = '<tr><th class="period-header">Klasė</th>';
+        for (let p = 1; p <= 8; p++) {
+            const time = PERIOD_TIMES[p] || { start: '', end: '' };
+            headerHTML += `<th class="period-header">
+                <div class="period-num">${p}.</div>
+                <div class="period-time">${time.start}–${time.end}</div>
+                ${time.breakAfter ? `<div class="period-break">${time.breakAfter}min</div>` : ''}
+            </th>`;
+        }
+        headerHTML += '</tr>';
+        table.querySelector('thead').innerHTML = headerHTML;
+
+        const currentPeriod = getCurrentPeriod();
+
+        tbody.innerHTML = '';
+        allClasses.forEach(cls => {
+            // If class filter is active, only show that class
+            if (activeFilters.class && cls !== activeFilters.class) return;
+
+            const dayLessons = scheduleByClass[cls]?.[selectedDay];
+            const hasAnyLesson = dayLessons && Object.keys(dayLessons).length > 0;
+            if (!hasAnyLesson) return;
+
+            const tr = document.createElement('tr');
+            tr.className = 'class-row';
+
+            let rowHTML = `<td>${cls.toUpperCase()}</td>`;
+
+            for (let p = 1; p <= 8; p++) {
+                let lessons = scheduleByClass[cls]?.[selectedDay]?.filter(l => l.period === p) || [];
+
+                // Apply filters
+                lessons = applyFilters(lessons);
+
+                let cellClass = 'lesson-cell';
+                let cellContent = '';
+
+                const isCurrentBreak = selectedDay === new Date().getDay() && currentPeriod === p + 0.5;
+                const isCurrentPeriod = selectedDay === new Date().getDay() && currentPeriod === p;
+
+                if (selectedDay === new Date().getDay()) {
+                    if (currentPeriod === p) {
+                        cellClass += ' is-current';
+                    } else if (isCurrentBreak && p === Math.floor(currentPeriod)) {
+                        cellClass += ' is-break';
+                    } else if (currentPeriod > p) {
+                        cellClass += ' is-past';
+                    } else {
+                        cellClass += ' is-future';
+                    }
+                } else {
+                    cellClass += ' has-lesson';
+                }
+
+                if (lessons.length > 0) {
+                    cellClass += ' has-lesson';
+
+                    const subjectGroups = {};
+                    lessons.forEach(lesson => {
+                        const key = lesson.subject;
+                        if (!subjectGroups[key]) subjectGroups[key] = [];
+                        subjectGroups[key].push(lesson);
+                    });
+
+                    const sortedSubjects = Object.keys(subjectGroups).sort((a, b) => {
+                        const aIsConsultation = a.includes('Konsultacija');
+                        const bIsConsultation = b.includes('Konsultacija');
+                        if (aIsConsultation && !bIsConsultation) return 1;
+                        if (!aIsConsultation && bIsConsultation) return -1;
+                        return 0;
+                    });
+
+                    sortedSubjects.forEach(subject => {
+                        const groupLessons = subjectGroups[subject];
+                        const indicator = isCurrentPeriod ? '<span class="current-indicator"></span>' : '';
+                        const displaySubject = subject.length > 15 ? subject.substring(0, 15) + '…' : subject;
+
+                        const lessonLines = groupLessons.map(lesson => {
+                            const roomBadge = lesson.room && !lesson.isLegend
+                                ? `<span class="room-badge">Kab.${lesson.room}</span>`
+                                : '';
+                            const splitBadge = lesson.splitSuffix
+                                ? `<span class="split-badge">${lesson.splitSuffix}</span>`
+                                : '';
+                            const poolStar = lesson.isPool
+                                ? `<span style="color:#1a73e8;font-size:0.7rem;font-weight:700;" title="Pamoka Molėtų baseine">*</span>`
+                                : '';
+                            if (lesson.isLegend) {
+                                const rBadge = lesson.room
+                                    ? `<span class="room-badge">Kab.${lesson.room}</span>`
+                                    : '';
+                                return `${abbreviateName(lesson.teacher)} ${rBadge}`;
+                            }
+                            return `${abbreviateName(lesson.teacher)} ${roomBadge} ${splitBadge}${poolStar}`;
+                        });
+
+                        cellContent += `<div class="lesson-info" style="line-height:1.2;">
+                            <div style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"><span class="lesson-class" style="display:inline;font-size:0.7rem;">${indicator}${displaySubject}</span></div>
+                            <div style="color:#555;font-size:0.6rem;">${lessonLines.join(' · ')}</div>
+                        </div>`;
+                    });
+                } else if (isCurrentBreak && !Object.values(activeFilters).some(v => v)) {
+                    // Show break indicator only when no filters are active
+                    const nextPeriod = p + 1;
+                    cellContent = `<div class="break-indicator">☕ Pertrauka<br><span style="font-size:0.55rem;">iki ${nextPeriod}.</span></div>`;
+                } else {
+                    cellContent = '<span class="no-lesson">—</span>';
+                }
+
+                rowHTML += `<td class="${cellClass}">${cellContent}</td>`;
+            }
+
+            tr.innerHTML = rowHTML;
+            tbody.appendChild(tr);
+        });
+
+        if (selectedDay === new Date().getDay() && currentPeriod >= 1 && currentPeriod <= 8) {
+            const currentCell = tbody.querySelector('.is-current');
+            if (currentCell) {
+                currentCell.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+            }
+        }
+    }
+
+    function updateHeaderDay() {
+        const today = new Date().getDay();
+        const now = new Date();
+        const el = document.getElementById('headerDay');
+
+        const dayDiff = selectedDay - today;
+        const targetDate = new Date(now);
+        targetDate.setDate(now.getDate() + dayDiff);
+
+        if (dayDiff === 0) {
+            el.textContent = `${DAY_NAMES[selectedDay]}, ${targetDate.toLocaleDateString('lt-LT')}`;
+        } else if (dayDiff === 1) {
+            el.textContent = `📅 ${DAY_NAMES[selectedDay]} (rytoj), ${targetDate.toLocaleDateString('lt-LT')}`;
+        } else {
+            el.textContent = `📅 ${DAY_NAMES[selectedDay]}, ${targetDate.toLocaleDateString('lt-LT')}`;
+        }
+    }
+
+    function updateCountdown(now) {
+        const hours = now.getHours();
+        const minutes = now.getMinutes();
+        const currentTime = hours * 60 + minutes;
+        const currentSeconds = currentTime * 60 + now.getSeconds();
+
+        const labelEl = document.getElementById('countdownLabel');
+        const timeEl = document.getElementById('countdownTime');
+
+        for (let p = 1; p <= 8; p++) {
+            if (PERIOD_TIMES[p]) {
+                const [startH, startM] = PERIOD_TIMES[p].start.split(':').map(Number);
+                const [endH, endM] = PERIOD_TIMES[p].end.split(':').map(Number);
+                const startSec = (startH * 60 + startM) * 60;
+                const endSec = (endH * 60 + endM) * 60;
+
+                if (currentSeconds >= startSec && currentSeconds < endSec) {
+                    const remaining = endSec - currentSeconds;
+                    const mins = Math.floor(remaining / 60);
+                    const secs = remaining % 60;
+                    labelEl.textContent = `${p}. pamoka`;
+                    timeEl.textContent = `-${mins}:${String(secs).padStart(2, '0')}`;
+                    timeEl.style.color = '#fff';
+                    return;
+                }
+            }
+
+            if (PERIOD_TIMES[p] && PERIOD_TIMES[p].breakAfter) {
+                const [endH, endM] = PERIOD_TIMES[p].end.split(':').map(Number);
+                const endSec = (endH * 60 + endM) * 60;
+                const breakDurationMin = parseInt(PERIOD_TIMES[p].breakAfter) || 0;
+                const breakEndSec = endSec + (breakDurationMin * 60);
+
+                if (currentSeconds >= endSec && currentSeconds < breakEndSec) {
+                    const remaining = breakEndSec - currentSeconds;
+                    const mins = Math.floor(remaining / 60);
+                    const secs = remaining % 60;
+                    const nextPeriod = p + 1;
+                    labelEl.textContent = `☕ Pertrauka (${nextPeriod}. pamoka)`;
+                    timeEl.textContent = `${mins}:${String(secs).padStart(2, '0')}`;
+                    timeEl.style.color = '#ffd600';
+                    return;
+                }
+            }
+        }
+
+        labelEl.textContent = 'Pamokos nevyksta';
+        timeEl.textContent = '--:--';
+        timeEl.style.color = '#aaa';
+    }
+
+    function updateClock() {
+        const now = new Date();
+        document.getElementById('clock').textContent =
+            now.toLocaleTimeString('lt-LT', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        updateCountdown(now);
+    }
+
+    async function init() {
+        try {
+            const rows = await fetchData();
+            parseSchedule(rows);
+
+            const now = new Date();
+            const today = now.getDay();
+            const currentTime = now.getHours() * 60 + now.getMinutes();
+            const SCHOOL_END_TIME = 15 * 60 + 30;
+
+            if (today >= 1 && today <= 5 && currentTime < SCHOOL_END_TIME) {
+                selectedDay = today;
+            } else if (today >= 1 && today <= 4) {
+                selectedDay = today + 1;
+            } else {
+                selectedDay = 1;
+            }
+
+            buildDaySelector();
+            setupFilters();
+            renderTimeline();
+            updateHeaderDay();
+
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('app').style.display = 'block';
+
+            updateClock();
+            setInterval(updateClock, 1000);
+
+            setInterval(() => {
+                renderTimeline();
+                const now = new Date();
+                const today = now.getDay();
+                const currentTime = now.getHours() * 60 + now.getMinutes();
+                const SCHOOL_END_TIME = 15 * 60 + 30;
+
+                if (selectedDay === today && currentTime >= SCHOOL_END_TIME) {
+                    if (today >= 1 && today <= 4) {
+                        selectedDay = today + 1;
+                        buildDaySelector();
+                        renderTimeline();
+                        updateHeaderDay();
+                    } else {
+                        selectedDay = 1;
+                        buildDaySelector();
+                        renderTimeline();
+                        updateHeaderDay();
+                    }
+                }
+            }, 60000);
+
+            setInterval(async () => {
+                try {
+                    console.log('🔄 Refreshing schedule data...');
+                    const rows = await fetchData();
+                    parseSchedule(rows);
+                    renderTimeline();
+                    updateHeaderDay();
+                    console.log('✅ Schedule data refreshed');
+                } catch (err) {
+                    console.error('❌ Failed to refresh data:', err);
+                }
+            }, 10 * 60 * 1000);
+
+        } catch (err) {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('error-container').style.display = 'block';
+            document.getElementById('error-container').innerHTML = `
+                <strong>❌ Klaida kraunant duomenis</strong><br>
+                ${err.message}<br>
+                <small>Įsitikinkite, kad esate prisijungę prie interneto.</small>
+            `;
+            console.error(err);
+        }
+    }
+
+    init();
+</script>
+</body>
+</html>

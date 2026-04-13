@@ -319,6 +319,7 @@
     <div>
         <h2>Molėtų progimnazijos pamokų tvarkaraštis</h2>
         <div id="headerDay" style="font-size:0.85rem;opacity:0.85;margin-top:3px;"></div>
+        <div id="weekType" style="font-size:0.75rem;opacity:0.9;margin-top:2px;"></div>
     </div>
     <div id="countdown" style="text-align:center;font-size:0.9rem;">
         <div id="countdownLabel" style="font-size:0.75rem;opacity:0.8;">Pamoka</div>
@@ -533,6 +534,71 @@
         return parseCSV(csvText);
     }
 
+    // Determine if current week is odd (nelyginė) or even (lyginė)
+    // Week 1 of year = odd, Week 2 = even, alternating
+    function isEvenWeek() {
+        const now = new Date();
+        const startOfYear = new Date(now.getFullYear(), 0, 1);
+        const weekNumber = Math.ceil(((now - startOfYear) / 86400000 + startOfYear.getDay() + 1) / 7);
+        return weekNumber % 2 === 0;
+    }
+
+    // Parse class entry with week indicator
+    // "6c/" = odd week only (nelyginė savaitė)
+    // "/ 5b" = even week only (lyginė savaitė)
+    // "6c" = every week
+    // "6c/ 5b" = 6c on odd weeks, 5b on even weeks
+    function parseWeekClasses(cellValue) {
+        const currentEvenWeek = isEvenWeek();
+        const classes = [];
+
+        // Check for slash pattern
+        if (cellValue.includes('/')) {
+            const parts = cellValue.split(/\s*\/\s*/).map(s => s.trim()).filter(Boolean);
+
+            if (parts.length === 2) {
+                // Pattern: "6c/ 5b" or "6c/5b"
+                // First part is odd week, second part is even week
+                const oddWeekClass = parts[0];
+                const evenWeekClass = parts[1];
+
+                if (currentEvenWeek && evenWeekClass) {
+                    const parsed = parseClassNames(evenWeekClass);
+                    parsed.forEach(cls => classes.push(cls));
+                } else if (!currentEvenWeek && oddWeekClass) {
+                    const parsed = parseClassNames(oddWeekClass);
+                    parsed.forEach(cls => classes.push(cls));
+                }
+            } else if (parts.length === 1) {
+                const part = parts[0];
+                // Pattern: "6c/" or "/ 5b"
+                if (cellValue.endsWith('/')) {
+                    // "6c/" - odd week only
+                    if (!currentEvenWeek) {
+                        const parsed = parseClassNames(part);
+                        parsed.forEach(cls => classes.push(cls));
+                    }
+                } else if (cellValue.startsWith('/')) {
+                    // "/ 5b" - even week only
+                    if (currentEvenWeek) {
+                        const parsed = parseClassNames(part);
+                        parsed.forEach(cls => classes.push(cls));
+                    }
+                } else {
+                    // Just a regular class name with internal slash (unlikely but handle it)
+                    const parsed = parseClassNames(part);
+                    parsed.forEach(cls => classes.push(cls));
+                }
+            }
+        } else {
+            // No slash - regular class for every week
+            const parsed = parseClassNames(cellValue);
+            parsed.forEach(cls => classes.push(cls));
+        }
+
+        return classes;
+    }
+
     // Parse schedule data from rows
     function parseSchedule(rows) {
         const LESSONS_PER_DAY = 8;
@@ -588,57 +654,54 @@
                 for (let p = 0; p < LESSONS_PER_DAY; p++) {
                     const cellValue = (cells[dayStartCol + p] || '').trim();
                     if (cellValue && cellValue !== 'B') {
-                        const parts = cellValue.split(/\s*\/\s*/).map(s => s.trim()).filter(Boolean);
+                        // Use the new week-aware parser
+                        const weekClasses = parseWeekClasses(cellValue);
+                        const isLegendCode = LEGEND_CODES[cellValue];
 
-                        parts.forEach(part => {
-                            const parsedClasses = parseClassNames(part);
-                            const isLegendCode = LEGEND_CODES[part];
-
-                            if (isLegendCode && part !== 'B') {
-                                parsedClasses.forEach(cls => {
-                                    classesSet.add(cls.name);
-                                    dayLessons.push({
-                                        period: p + 1,
-                                        class: cls.name,
-                                        teacher: teacherName,
-                                        subject: LEGEND_CODES[part],
-                                        room: '',
-                                        isLegend: true,
-                                        splitSuffix: cls.suffix,
-                                        originalClass: part,
-                                        isPool: false
-                                    });
+                        if (isLegendCode && cellValue !== 'B') {
+                            weekClasses.forEach(cls => {
+                                classesSet.add(cls.name);
+                                dayLessons.push({
+                                    period: p + 1,
+                                    class: cls.name,
+                                    teacher: teacherName,
+                                    subject: LEGEND_CODES[cellValue],
+                                    room: '',
+                                    isLegend: true,
+                                    splitSuffix: cls.suffix,
+                                    originalClass: cellValue,
+                                    isPool: false
                                 });
-                                if (parsedClasses.length === 0) {
-                                    dayLessons.push({
-                                        period: p + 1,
-                                        class: part,
-                                        teacher: teacherName,
-                                        subject: LEGEND_CODES[part],
-                                        room: '',
-                                        isLegend: true,
-                                        splitSuffix: '',
-                                        originalClass: part,
-                                        isPool: false
-                                    });
-                                }
-                            } else {
-                                parsedClasses.forEach(cls => {
-                                    classesSet.add(cls.name);
-                                    dayLessons.push({
-                                        period: p + 1,
-                                        class: cls.name,
-                                        teacher: teacherName,
-                                        subject: subject,
-                                        room: classroom,
-                                        isLegend: false,
-                                        splitSuffix: cls.suffix,
-                                        originalClass: part,
-                                        isPool: poolMarkers[teacherName]?.[jsDay]?.[p + 1] || false
-                                    });
+                            });
+                            if (weekClasses.length === 0) {
+                                dayLessons.push({
+                                    period: p + 1,
+                                    class: cellValue,
+                                    teacher: teacherName,
+                                    subject: LEGEND_CODES[cellValue],
+                                    room: '',
+                                    isLegend: true,
+                                    splitSuffix: '',
+                                    originalClass: cellValue,
+                                    isPool: false
                                 });
                             }
-                        });
+                        } else {
+                            weekClasses.forEach(cls => {
+                                classesSet.add(cls.name);
+                                dayLessons.push({
+                                    period: p + 1,
+                                    class: cls.name,
+                                    teacher: teacherName,
+                                    subject: subject,
+                                    room: classroom,
+                                    isLegend: false,
+                                    splitSuffix: cls.suffix,
+                                    originalClass: cellValue,
+                                    isPool: poolMarkers[teacherName]?.[jsDay]?.[p + 1] || false
+                                });
+                            });
+                        }
                     }
                 }
 
@@ -1000,6 +1063,11 @@
         } else {
             el.textContent = `📅 ${DAY_NAMES[selectedDay]}, ${targetDate.toLocaleDateString('lt-LT')}`;
         }
+
+        // Update week type indicator
+        const weekTypeEl = document.getElementById('weekType');
+        const evenWeek = isEvenWeek();
+        weekTypeEl.textContent = evenWeek ? '📅 Lyginė savaitė' : '📅 Nelyginė savaitė';
     }
 
     function updateCountdown(now) {

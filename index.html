@@ -511,11 +511,19 @@
     async function fetchData() {
         const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTH3SfQ4BkInzJNhJiZ_OxJ9QxCKdcQHHn-HPGg6UrZitqrx9fkNo42hjQZ808m4T2jiQYnNaBL0lNs/pub?gid=1201117612&single=true&output=csv";
 
+
         const proxies = [
-            `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(SHEET_CSV_URL)}`,
-            `https://thingproxy.freeboard.io/fetch/${encodeURIComponent(SHEET_CSV_URL)}`,
-            `https://api.allorigins.win/raw?url=${encodeURIComponent(SHEET_CSV_URL)}`
-        ];
+    // Corsfix — free for dev/open source, no API key needed (best bet currently)
+        `https://proxy.corsfix.com/?${SHEET_CSV_URL}`,
+    // cors.x2u.in — ~100 req/hour limit
+    `https://cors.x2u.in/${SHEET_CSV_URL}`,
+    // AllOrigins — 20 req/min limit
+    `https://api.allorigins.win/raw?url=${encodeURIComponent(SHEET_CSV_URL)}`,
+    // CodeTabs — 5 req/sec limit (you had this but it may have been a typo — "quest" not "query")
+    `https://api.codetabs.com/v1/proxy/?quest=${encodeURIComponent(SHEET_CSV_URL)}`,
+  ];
+
+
 
         let csvText = null;
         let lastError = null;

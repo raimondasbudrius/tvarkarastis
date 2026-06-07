@@ -512,7 +512,7 @@ async function fetchData() {
     const SHEET_ID = "2PACX-1vTH3SfQ4BkInzJNhJiZ_OxJ9QxCKdcQHHn-HPGg6UrZitqrx9fkNo42hjQZ808m4T2jiQYnNaBL0lNs";
     const GID = "1201117612";
 
-    const url = `https://docs.google.com/spreadsheets/d/e/${SHEET_ID}/gviz/tq?tqx=out:json&gid=${GID}`;
+    const url = `https://docs.google.com/spreadsheets/d/e/${SHEET_ID}/pub?tqx=out:json&gid=${GID}`;
     const res = await fetch(url);
     if (!res.ok) throw new Error(`Serverio klaida: ${res.status}`);
     const text = await res.text();

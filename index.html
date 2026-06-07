@@ -517,11 +517,31 @@ async function fetchData() {
     if (!res.ok) throw new Error(`Serverio klaida: ${res.status}`);
     const text = await res.text();
 
-    const json = JSON.parse(
-        text.match(/google\.visualization\.Query\.setResponse\(([\s\S]*?)\);?\s*$/)[1]
-    );
+    // Log raw response to see what Google actually returns
+    console.log('Raw response (first 300 chars):', text.substring(0, 300));
 
-    // Convert gviz JSON table → CSV rows (same format parseCSV() returns)
+    // Try multiple regex patterns
+    let json;
+    const patterns = [
+        /google\.visualization\.Query\.setResponse\(([\s\S]*?)\);?\s*$/,
+        /setResponse\(([\s\S]*?)\);?\s*$/,
+        /^\s*[\w.]+\(([\s\S]*?)\);?\s*$/
+    ];
+
+    for (const pattern of patterns) {
+        const match = text.match(pattern);
+        if (match) {
+            try {
+                json = JSON.parse(match[1]);
+                break;
+            } catch (e) {
+                console.warn('Pattern matched but JSON parse failed:', e);
+            }
+        }
+    }
+
+    if (!json) throw new Error('Nepavyko išanalizuoti Google atsakymo. Žiūrėkite konsolę.');
+
     const cols = json.table.cols;
     const rows = json.table.rows;
 

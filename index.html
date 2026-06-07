@@ -508,38 +508,30 @@
     }
 
     // Fetch and parse data
- async function fetchData() {
-  const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTH3SfQ4BkInzJNhJiZ_OxJ9QxCKdcQHHn-HPGg6UrZitqrx9fkNo42hjQZ808m4T2jiQYnNaBL0lNs/pub?gid=1201117612&single=true&output=csv";
-  const SHEET_ID = "2PACX-1vTH3SfQ4BkInzJNhJiZ_OxJ9QxCKdcQHHn-HPGg6UrZitqrx9fkNo42hjQZ808m4T2jiQYnNaBL0lNs";
-  const GID = "1201117612";
+async function fetchData() {
+    const SHEET_ID = "2PACX-1vTH3SfQ4BkInzJNhJiZ_OxJ9QxCKdcQHHn-HPGg6UrZitqrx9fkNo42hjQZ808m4T2jiQYnNaBL0lNs";
+    const GID = "1201117612";
 
-  // --- Attempt 1: CSV via proxies ---
-  const proxies = [
-    `https://cors.x2u.in/${SHEET_CSV_URL}`,
-    `https://api.allorigins.win/raw?url=${encodeURIComponent(SHEET_CSV_URL)}`,
-    `https://api.codetabs.com/v1/proxy/?quest=${encodeURIComponent(SHEET_CSV_URL)}`,
-    `https://proxy.corsfix.com/?${SHEET_CSV_URL}`,  // needs real Origin header
-  ];
+    const url = `https://docs.google.com/spreadsheets/d/e/${SHEET_ID}/gviz/tq?tqx=out:json&gid=${GID}`;
+    const res = await fetch(url);
+    if (!res.ok) throw new Error(`Serverio klaida: ${res.status}`);
+    const text = await res.text();
 
+    const json = JSON.parse(
+        text.match(/google\.visualization\.Query\.setResponse\(([\s\S]*?)\);?\s*$/)[1]
+    );
 
+    // Convert gviz JSON table → CSV rows (same format parseCSV() returns)
+    const cols = json.table.cols;
+    const rows = json.table.rows;
 
+    const header = cols.map(c => c.label);
+    const dataRows = rows.map(row =>
+        row.c.map(cell => (cell?.v != null ? String(cell.v) : ''))
+    );
 
-        let csvText = null;
-        let lastError = null;
-
-        for (const proxyUrl of proxies) {
-            try {
-                const response = await fetch(proxyUrl, { signal: AbortSignal.timeout(10000) });
-                if (response.ok) {
-                    csvText = await response.text();
-                    if (csvText.trim().length > 10) break;
-                }
-            } catch (err) { lastError = err; }
-        }
-
-        if (!csvText) throw lastError || new Error('Visi proxy neveikia');
-        return parseCSV(csvText);
-    }
+    return [header, ...dataRows];
+}
 
     // Determine if current week is odd (nelyginė) or even (lyginė)
     // Week 1 of year = odd, Week 2 = even, alternating

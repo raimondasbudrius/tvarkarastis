@@ -512,45 +512,53 @@ async function fetchData() {
     const SHEET_ID = "2PACX-1vTH3SfQ4BkInzJNhJiZ_OxJ9QxCKdcQHHn-HPGg6UrZitqrx9fkNo42hjQZ808m4T2jiQYnNaBL0lNs";
     const GID = "1201117612";
 
-    const url = `https://docs.google.com/spreadsheets/d/e/${SHEET_ID}/pub?tqx=out:json&gid=${GID}`;
-    const res = await fetch(url);
-    if (!res.ok) throw new Error(`Serverio klaida: ${res.status}`);
-    const text = await res.text();
-
-    // Log raw response to see what Google actually returns
-    console.log('Raw response (first 300 chars):', text.substring(0, 300));
-
-    // Try multiple regex patterns
-    let json;
-    const patterns = [
-        /google\.visualization\.Query\.setResponse\(([\s\S]*?)\);?\s*$/,
-        /setResponse\(([\s\S]*?)\);?\s*$/,
-        /^\s*[\w.]+\(([\s\S]*?)\);?\s*$/
+    // Multiple URL formats to try (Google Sheets supports various endpoints)
+    const urls = [
+        // Published sheet CSV format (works with CORS for public sheets)
+        `https://docs.google.com/spreadsheets/d/e/${SHEET_ID}/pub?output=csv&gid=${GID}`,
+        // Alternative: gviz JSON format (also CORS-enabled for public sheets)
+        `https://docs.google.com/spreadsheets/d/e/${SHEET_ID}/gviz/tq?tqx=out:csv&gid=${GID}`,
+        // Alternative: export format
+        `https://docs.google.com/spreadsheets/d/e/${SHEET_ID}/export?format=csv&gid=${GID}`
     ];
-
-    for (const pattern of patterns) {
-        const match = text.match(pattern);
-        if (match) {
-            try {
-                json = JSON.parse(match[1]);
-                break;
-            } catch (e) {
-                console.warn('Pattern matched but JSON parse failed:', e);
+    
+    let text = null;
+    let lastError = null;
+    
+    for (const url of urls) {
+        try {
+            console.log('Trying to fetch from:', url);
+            const res = await fetch(url, { signal: AbortSignal.timeout(15000) });
+            if (res.ok) {
+                const responseText = await res.text();
+                // Check we got CSV data, not HTML error page
+                if (responseText && !responseText.startsWith('<!DOCTYPE') && !responseText.startsWith('<html')) {
+                    text = responseText;
+                    console.log('✅ Fetched directly from Google Sheets');
+                    break;
+                } else {
+                    lastError = new Error('Google grąžino HTML vietoj CSV duomenų.');
+                }
+            } else {
+                lastError = new Error(`Serverio klaida: ${res.status}`);
             }
+        } catch (e) {
+            lastError = e;
+            console.warn('Fetch attempt failed:', e.message);
         }
     }
-
-    if (!json) throw new Error('Nepavyko išanalizuoti Google atsakymo. Žiūrėkite konsolę.');
-
-    const cols = json.table.cols;
-    const rows = json.table.rows;
-
-    const header = cols.map(c => c.label);
-    const dataRows = rows.map(row =>
-        row.c.map(cell => (cell?.v != null ? String(cell.v) : ''))
-    );
-
-    return [header, ...dataRows];
+    
+    if (!text) {
+        throw new Error(`Nepavyko prisijungti prie Google Sheets.<br><small>Klaida: ${lastError?.message || 'Nežinoma klaida'}</small><br><small>Įsitikinkite, kad lentelė yra paskelbta viešai (File → Share → Publish to web).</small>`);
+    }
+    
+    // Parse CSV
+    const rows = parseCSV(text);
+    if (rows.length < 5) {
+        throw new Error('Google Sheets duomenys tušti arba neteisingo formato.');
+    }
+    
+    return rows;
 }
 
     // Determine if current week is odd (nelyginė) or even (lyginė)

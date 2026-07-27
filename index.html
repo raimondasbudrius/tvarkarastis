@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>🏫 Pamokų Tvarkaraštis</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&display=swap" rel="stylesheet">
     <style>
         * { box-sizing: border-box; }
         body {
@@ -311,6 +312,127 @@
             color: #666;
             margin-left: 5px;
         }
+
+        /* ===== Fullscreen "Pamokų nėra" screen ===== */
+        .no-lessons-screen {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            background:
+                radial-gradient(ellipse at 18% 15%, rgba(255,255,255,0.12) 0%, transparent 50%),
+                radial-gradient(ellipse at 85% 85%, rgba(255,255,255,0.09) 0%, transparent 45%),
+                linear-gradient(135deg, #1a73e8 0%, #1557b0 55%, #0d3c7d 100%);
+            color: white;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            text-align: center;
+            padding: 24px;
+        }
+        .no-lessons-screen.active { display: flex; }
+
+        .no-lessons-screen::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image: radial-gradient(rgba(255,255,255,0.08) 2px, transparent 2px);
+            background-size: 36px 36px;
+            pointer-events: none;
+        }
+
+        .nl-float {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.07);
+            animation: nlFloat 14s ease-in-out infinite;
+            pointer-events: none;
+        }
+        .nl-float:nth-of-type(1) { width: 240px; height: 240px; top: 6%; left: 5%; animation-duration: 17s; }
+        .nl-float:nth-of-type(2) { width: 140px; height: 140px; bottom: 12%; left: 13%; animation-duration: 12s; animation-delay: -4s; }
+        .nl-float:nth-of-type(3) { width: 320px; height: 320px; top: 16%; right: -70px; animation-duration: 21s; animation-delay: -8s; }
+        .nl-float:nth-of-type(4) { width: 100px; height: 100px; bottom: 22%; right: 16%; animation-duration: 10s; animation-delay: -2s; }
+
+        @keyframes nlFloat {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-32px) scale(1.07); }
+        }
+
+        .nl-bell {
+            font-size: clamp(70px, 14vw, 150px);
+            line-height: 1;
+            display: inline-block;
+            transform-origin: top center;
+            animation: nlSwing 3s ease-in-out infinite;
+            filter: drop-shadow(0 12px 26px rgba(0,0,0,0.28));
+        }
+
+        @keyframes nlSwing {
+            0%, 100% { transform: rotate(-11deg); }
+            50% { transform: rotate(11deg); }
+        }
+
+        .nl-title {
+            font-family: 'Archivo Black', 'Segoe UI', sans-serif;
+            font-size: clamp(46px, 11vw, 128px);
+            text-transform: uppercase;
+            letter-spacing: 0.02em;
+            margin: 20px 0 10px;
+            text-shadow: 0 8px 34px rgba(0,0,0,0.32);
+            animation: nlPulse 4s ease-in-out infinite;
+        }
+
+        @keyframes nlPulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.82; }
+        }
+
+        .nl-subtitle {
+            font-size: clamp(17px, 3vw, 30px);
+            font-weight: 600;
+            opacity: 0.92;
+        }
+
+        .nl-divider {
+            width: min(420px, 70vw);
+            height: 4px;
+            border-radius: 2px;
+            background: rgba(255,255,255,0.35);
+            margin: 28px 0;
+        }
+
+        .nl-clock {
+            font-size: clamp(40px, 7vw, 74px);
+            font-weight: 700;
+            font-variant-numeric: tabular-nums;
+            letter-spacing: 0.04em;
+            text-shadow: 0 4px 20px rgba(0,0,0,0.25);
+        }
+
+        .nl-date {
+            font-size: clamp(15px, 2.4vw, 22px);
+            opacity: 0.85;
+            margin-top: 8px;
+            text-transform: capitalize;
+        }
+
+        .nl-note {
+            margin-top: 34px;
+            font-size: clamp(12px, 1.8vw, 16px);
+            opacity: 0.75;
+            display: flex;
+            align-items: center;
+            gap: 9px;
+        }
+
+        .nl-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #4ade80;
+            animation: blink 1.4s infinite;
+        }
     </style>
 </head>
 <body>
@@ -334,6 +456,20 @@
 </div>
 
 <div id="error-container" class="error-msg" style="display:none;"></div>
+
+<div id="noLessonsScreen" class="no-lessons-screen">
+    <div class="nl-float"></div>
+    <div class="nl-float"></div>
+    <div class="nl-float"></div>
+    <div class="nl-float"></div>
+    <div class="nl-bell">🔔</div>
+    <div class="nl-title">Pamokų nėra</div>
+    <div class="nl-subtitle">Šiandien pamokos nevyksta — geros dienos! 😊</div>
+    <div class="nl-divider"></div>
+    <div class="nl-clock" id="nlClock">--:--:--</div>
+    <div class="nl-date" id="nlDate"></div>
+    <div class="nl-note"><span class="nl-dot"></span> Tvarkaraštis atsinaujina automatiškai kas 10 min.</div>
+</div>
 
 <div id="app" style="display:none;">
     <div class="filter-bar" id="filterBar">
@@ -396,6 +532,7 @@
     let allClasses = [];
     let selectedDay = new Date().getDay(); // 0=Sun, 1=Mon...
     let refreshInterval;
+    let hasAnyLessons = false; // false → fullscreen "Pamokų nėra"
 
     // Filter state
     let activeFilters = { teacher: '', subject: '', room: '', class: '' };
@@ -552,9 +689,9 @@ async function fetchData() {
         throw new Error(`Nepavyko prisijungti prie Google Sheets.<br><small>Klaida: ${lastError?.message || 'Nežinoma klaida'}</small><br><small>Įsitikinkite, kad lentelė yra paskelbta viešai (File → Share → Publish to web).</small>`);
     }
     
-    // Parse CSV
+    // Parse CSV (empty sheet is handled by the "Pamokų nėra" screen, not as an error)
     const rows = parseCSV(text);
-    if (rows.length < 5) {
+    if (rows.length === 0) {
         throw new Error('Google Sheets duomenys tušti arba neteisingo formato.');
     }
     
@@ -785,6 +922,15 @@ async function fetchData() {
         });
 
         populateFilterDropdowns();
+
+        // Count total lessons across all classes and days → detect empty schedule
+        let totalLessons = 0;
+        Object.values(scheduleByClass).forEach(days => {
+            Object.values(days).forEach(lessons => {
+                totalLessons += lessons.length;
+            });
+        });
+        hasAnyLessons = totalLessons > 0;
     }
 
     // Populate filter dropdowns
@@ -1153,6 +1299,30 @@ async function fetchData() {
         document.getElementById('clock').textContent =
             now.toLocaleTimeString('lt-LT', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
         updateCountdown(now);
+        updateNlClock(now);
+    }
+
+    // ===== Fullscreen "Pamokų nėra" screen =====
+    function updateNlClock(now) {
+        const clockEl = document.getElementById('nlClock');
+        if (!clockEl) return;
+        clockEl.textContent = now.toLocaleTimeString('lt-LT', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        document.getElementById('nlDate').textContent =
+            now.toLocaleDateString('lt-LT', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+    }
+
+    function updateNoLessonsScreen() {
+        const screen = document.getElementById('noLessonsScreen');
+        const app = document.getElementById('app');
+
+        if (!hasAnyLessons) {
+            screen.classList.add('active');
+            app.style.display = 'none';
+            updateNlClock(new Date());
+        } else {
+            screen.classList.remove('active');
+            app.style.display = 'block';
+        }
     }
 
     async function init() {
@@ -1179,7 +1349,7 @@ async function fetchData() {
             updateHeaderDay();
 
             document.getElementById('loading').style.display = 'none';
-            document.getElementById('app').style.display = 'block';
+            updateNoLessonsScreen();
 
             updateClock();
             setInterval(updateClock, 1000);
@@ -1213,6 +1383,7 @@ async function fetchData() {
                     parseSchedule(rows);
                     renderTimeline();
                     updateHeaderDay();
+                    updateNoLessonsScreen();
                     console.log('✅ Schedule data refreshed');
                 } catch (err) {
                     console.error('❌ Failed to refresh data:', err);

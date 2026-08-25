@@ -648,18 +648,24 @@
 
     // Fetch and parse data
 async function fetchData() {
-    const SHEET_ID = "2PACX-1vTH3SfQ4BkInzJNhJiZ_OxJ9QxCKdcQHHn-HPGg6UrZitqrx9fkNo42hjQZ808m4T2jiQYnNaBL0lNs";
-    const GID = "1201117612";
+    const SHEET_ID = "1gH0Mwqf9v6pI_9Z_UmEiI3dPUyONr5pp6fbVsQVhfj0";
+    const GID = "1738401321";
+
+    // "Publish to web" IDs (2PACX-…) live under /d/e/, regular spreadsheet IDs under /d/
+    const base = SHEET_ID.startsWith('2PACX-')
+        ? `https://docs.google.com/spreadsheets/d/e/${SHEET_ID}`
+        : `https://docs.google.com/spreadsheets/d/${SHEET_ID}`;
 
     // Multiple URL formats to try (Google Sheets supports various endpoints)
-    const urls = [
+    const urls = [];
+    if (SHEET_ID.startsWith('2PACX-')) {
         // Published sheet CSV format (works with CORS for public sheets)
-        `https://docs.google.com/spreadsheets/d/e/${SHEET_ID}/pub?output=csv&gid=${GID}`,
-        // Alternative: gviz JSON format (also CORS-enabled for public sheets)
-        `https://docs.google.com/spreadsheets/d/e/${SHEET_ID}/gviz/tq?tqx=out:csv&gid=${GID}`,
-        // Alternative: export format
-        `https://docs.google.com/spreadsheets/d/e/${SHEET_ID}/export?format=csv&gid=${GID}`
-    ];
+        urls.push(`${base}/pub?output=csv&gid=${GID}`);
+    }
+    // gviz CSV format (CORS-enabled for publicly shared sheets)
+    urls.push(`${base}/gviz/tq?tqx=out:csv&gid=${GID}`);
+    // Alternative: export format
+    urls.push(`${base}/export?format=csv&gid=${GID}`);
     
     let text = null;
     let lastError = null;
@@ -688,7 +694,7 @@ async function fetchData() {
     }
     
     if (!text) {
-        throw new Error(`Nepavyko prisijungti prie Google Sheets.<br><small>Klaida: ${lastError?.message || 'Nežinoma klaida'}</small><br><small>Įsitikinkite, kad lentelė yra paskelbta viešai (File → Share → Publish to web).</small>`);
+        throw new Error(`Nepavyko prisijungti prie Google Sheets.<br><small>Klaida: ${lastError?.message || 'Nežinoma klaida'}</small><br><small>Įsitikinkite, kad lentelė yra paskelbta viešai (File → Share → Publish to web) arba bendrinama su visais, turinčiais nuorodą.</small>`);
     }
     
     // Parse CSV (empty sheet is handled by the "Pamokų nėra" screen, not as an error)

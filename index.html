@@ -656,15 +656,16 @@ async function fetchData() {
         ? `https://docs.google.com/spreadsheets/d/e/${SHEET_ID}`
         : `https://docs.google.com/spreadsheets/d/${SHEET_ID}`;
 
-    // Multiple URL formats to try (Google Sheets supports various endpoints)
+    // URL formats to try (Google Sheets supports various endpoints).
+    // The raw "export" CSV is a full-fidelity dump of the sheet (CORS-enabled
+    // for link-shared sheets). Published "2PACX-" IDs live under /d/e/ and
+    // don't support the "export" endpoint, so they use "pub?output=csv".
     const urls = [];
     if (SHEET_ID.startsWith('2PACX-')) {
         // Published sheet CSV format (works with CORS for public sheets)
         urls.push(`${base}/pub?output=csv&gid=${GID}`);
     }
-    // gviz CSV format (CORS-enabled for publicly shared sheets)
-    urls.push(`${base}/gviz/tq?tqx=out:csv&gid=${GID}`);
-    // Alternative: export format
+    // Raw CSV export (full fidelity, CORS-enabled for link-shared sheets)
     urls.push(`${base}/export?format=csv&gid=${GID}`);
     
     let text = null;

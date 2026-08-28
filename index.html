@@ -887,6 +887,22 @@ async function fetchData() {
             }
         }
 
+        // Classes actually taught by each teacher (from real, non-legend lessons).
+        // Used to restrict Konsultacija entries so they only appear for the
+        // classes that have lessons with that teacher.
+        const taughtClassesByTeacher = {};
+        Object.entries(scheduleByTeacher).forEach(([teacherName, days]) => {
+            const taught = new Set();
+            Object.values(days).forEach(lessons => {
+                lessons.forEach(lesson => {
+                    if (!lesson.isLegend && VALID_CLASSES.includes(lesson.class)) {
+                        taught.add(lesson.class);
+                    }
+                });
+            });
+            taughtClassesByTeacher[teacherName] = taught;
+        });
+
         allClasses = VALID_CLASSES;
 
         scheduleByClass = {};
@@ -898,7 +914,16 @@ async function fetchData() {
             Object.entries(days).forEach(([dayIndex, lessons]) => {
                 lessons.forEach(lesson => {
                     if (lesson.isLegend && lesson.class === lesson.originalClass) {
-                        VALID_CLASSES.forEach(cls => {
+                        // Standalone legend codes apply school-wide by default,
+                        // except Konsultacija: it applies only to the classes this
+                        // teacher actually teaches. Fallback to school-wide if the
+                        // teacher has no real lessons (avoid losing the entry).
+                        let targetClasses = VALID_CLASSES;
+                        if (lesson.subject.includes('Konsultacija')) {
+                            const taught = VALID_CLASSES.filter(cls => taughtClassesByTeacher[teacherName]?.has(cls));
+                            if (taught.length > 0) targetClasses = taught;
+                        }
+                        targetClasses.forEach(cls => {
                             if (!scheduleByClass[cls][dayIndex]) {
                                 scheduleByClass[cls][dayIndex] = [];
                             }

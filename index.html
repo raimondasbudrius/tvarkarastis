@@ -648,8 +648,8 @@
 
     // Fetch and parse data
 async function fetchData() {
-    const SHEET_ID = "1gH0Mwqf9v6pI_9Z_UmEiI3dPUyONr5pp6fbVsQVhfj0";
-    const GID = "1738401321";
+    const SHEET_ID = "17YpOJod_TIAi27DA_O_q2dFAvFXzVh9D1_fLYJ5HwCQ";
+    const GID = "1201117612";
 
     // "Publish to web" IDs (2PACX-…) live under /d/e/, regular spreadsheet IDs under /d/
     const base = SHEET_ID.startsWith('2PACX-')
@@ -1205,7 +1205,10 @@ async function fetchData() {
                     sortedSubjects.forEach(subject => {
                         const groupLessons = subjectGroups[subject];
                         const indicator = isCurrentPeriod ? '<span class="current-indicator"></span>' : '';
-                        const displaySubject = subject.length > 15 ? subject.substring(0, 15) + '…' : subject;
+                        // Full subject name — overflow is clipped by the CSS
+                        // ellipsis on the wrapping div when the cell is too
+                        // narrow (the signage embed enlarges the font to fit).
+                        const displaySubject = subject;
 
                         const lessonLines = groupLessons.map(lesson => {
                             const roomBadge = lesson.room && !lesson.isLegend

@@ -708,11 +708,27 @@ async function fetchData() {
 }
 
     // Determine if current week is odd (nelyginė) or even (lyginė)
-    // Week 1 of year = odd, Week 2 = even, alternating
+    // Weeks are counted from September 1st (school year start), not the calendar year:
+    // the week containing September 1st is week 1 (odd), week 2 = even, alternating.
+    // In January–August the count continues from the previous year's September 1st.
     function isEvenWeek() {
         const now = new Date();
-        const startOfYear = new Date(now.getFullYear(), 0, 1);
-        const weekNumber = Math.ceil(((now - startOfYear) / 86400000 + startOfYear.getDay() + 1) / 7);
+        const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+        // School year start: September 1st of the current year,
+        // or September 1st of the previous year before September
+        const schoolYearStart = new Date(now.getFullYear(), 8, 1); // month 8 = September
+        if (today < schoolYearStart) {
+            schoolYearStart.setFullYear(now.getFullYear() - 1);
+        }
+
+        // Align to the Monday of the week containing September 1st
+        const mondayOffset = (schoolYearStart.getDay() + 6) % 7; // days since Monday
+        const weekOneMonday = new Date(schoolYearStart);
+        weekOneMonday.setDate(schoolYearStart.getDate() - mondayOffset);
+
+        const daysDiff = Math.round((today - weekOneMonday) / 86400000);
+        const weekNumber = Math.floor(daysDiff / 7) + 1;
         return weekNumber % 2 === 0;
     }
 

@@ -196,6 +196,22 @@
             background: #fafafa;
         }
 
+        /* Keitimas: pamoka, pažymėta geltonai originale Google Sheets lentelėje.
+           Oranžinė spalva pasirinkta tam, kad būtų vizualiai atskiriama nuo
+           geltonos "dabartinės pamokos" spalvos. */
+        .lesson-cell.is-changed {
+            background: #ffe0b2;
+            border: 2px solid #fb8c00;
+        }
+
+        /* Jei pakeista pamoka yra ir dabartinė – paliekamas geltonas fonas,
+           bet oranžinis rėmelis rodo, kad tai keitimas. */
+        .lesson-cell.is-changed.is-current {
+            background: #fff9c4;
+            border: 2px solid #fb8c00;
+            box-shadow: inset 0 0 10px rgba(251, 140, 0, 0.35);
+        }
+
         @keyframes pulse-current {
             0%, 100% { box-shadow: inset 0 0 10px rgba(255, 214, 0, 0.3); }
             50% { box-shadow: inset 0 0 20px rgba(255, 214, 0, 0.5); }
@@ -521,6 +537,10 @@
                 <span>Pamoka praėjo</span>
             </div>
             <div class="legend-item">
+                <div class="legend-color" style="background:#ffe0b2;border:2px solid #fb8c00;"></div>
+                <span>Keitimas</span>
+            </div>
+            <div class="legend-item">
                 <span style="color:#1a73e8;font-weight:700;font-size:1.1rem;">*</span>
                 <span>Pamoka Molėtų baseine</span>
             </div>
@@ -646,10 +666,22 @@
         return rows;
     }
 
-    // Fetch and parse data
-async function fetchData() {
+    // ===== Google Sheets nustatymai =====
     const SHEET_ID = "17YpOJod_TIAi27DA_O_q2dFAvFXzVh9D1_fLYJ5HwCQ";
     const GID = "1201117612";
+
+    // Google Sheets API raktas, reikalingas langelių SPALVOMS skaityti
+    // (keitimams geltonu fonu aptikti). CSV/gviz endpoint'ai spalvų negrąžina.
+    // Raktas NEMOKAMAS ir programėlei prisijungimo nereikia:
+    //   1. https://console.cloud.google.com/ → susikurkite projektą
+    //   2. "APIs & Services" → "Library" → įjunkite "Google Sheets API"
+    //   3. "APIs & Services" → "Credentials" → "Create credentials" → "API key"
+    //   4. Įklijuokite raktą žemiau.
+    // Be rakto programa toliau veikia įprastai, tik keitimai nebus paryškinti.
+    const GOOGLE_API_KEY = "AIzaSyAskmuJHselr03F1ctWbpMvhNMo-LORHUo";
+
+    // Fetch and parse data
+async function fetchData() {
 
     // "Publish to web" IDs (2PACX-…) live under /d/e/, regular spreadsheet IDs under /d/
     const base = SHEET_ID.startsWith('2PACX-')
@@ -706,6 +738,95 @@ async function fetchData() {
     
     return rows;
 }
+
+    // ===== Keitimų (geltonų langelių) nuskaitymas iš Google Sheets =====
+    // Originalioje lentelėje pakeistos pamokos žymimos geltonu fonu.
+    // Grąžina raktų aibę "mokytojas|dalykas|diena|pamoka" pagal tai,
+    // kuriuos langelius parseSchedule vėliau paverčia pamokomis.
+
+    // Unikalus pamokos raktas (atitinka parseSchedule naudojamą identifikavimą)
+    function changeKey(teacher, subject, jsDay, period) {
+        return `${teacher}|${subject}|${jsDay}|${period}`;
+    }
+
+    // Ar spalva patenka į geltonų atspalvių diapazoną? Google Sheets paletės
+    // geltonos: #ffff00, #fff2cc, #ffe599, #ffd966, #f1c232, #bf9000 ir pan.
+    function isYellowColor(color) {
+        if (!color) return false;
+        const r = color.red || 0;
+        const g = color.green || 0;
+        const b = color.blue || 0;
+        const max = Math.max(r, g, b);
+        const min = Math.min(r, g, b);
+        if (max === min) return false; // pilka/balta/juoda – neturi atspalvio
+        const l = (max + min) / 2;
+        const d = max - min;
+        const s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+        let h;
+        if (max === r) h = ((g - b) / d + (g < b ? 6 : 0));
+        else if (max === g) h = (b - r) / d + 2;
+        else h = (r - g) / d + 4;
+        h *= 60;
+        return h >= 40 && h <= 75 && s >= 0.25 && l >= 0.2 && l <= 0.96;
+    }
+
+    async function fetchYellowCells() {
+        const empty = new Set();
+        if (!GOOGLE_API_KEY) {
+            console.info('ℹ️ GOOGLE_API_KEY nenustatytas – keitimai (geltoni langeliai) nebus paryškinti.');
+            return empty;
+        }
+        if (SHEET_ID.startsWith('2PACX-')) {
+            console.warn('⚠️ "Publish to web" (2PACX) ID langelių spalvų nuskaityti neleidžia.');
+            return empty;
+        }
+        try {
+            const fields = 'sheets(properties(sheetId,title),data.rowData.values(formattedValue,userEnteredFormat.backgroundColor,effectiveFormat.backgroundColor))';
+            const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}?includeGridData=true&fields=${encodeURIComponent(fields)}&key=${GOOGLE_API_KEY}`;
+            const res = await fetch(url, { signal: AbortSignal.timeout(15000) });
+            if (!res.ok) {
+                console.warn(`⚠️ Google Sheets API klaida ${res.status} – keitimai nebus paryškinti.`);
+                return empty;
+            }
+            const data = await res.json();
+            const sheet = (data.sheets || []).find(s => s.properties && s.properties.sheetId === Number(GID));
+            if (!sheet) {
+                console.warn(`⚠️ Lentelė su gid=${GID} nerasta – keitimai nebus paryškinti.`);
+                return empty;
+            }
+
+            const changed = new Set();
+            const rowData = (sheet.data && sheet.data[0] && sheet.data[0].rowData) || [];
+            let lastTeacher = '';
+            rowData.forEach((row, r) => {
+                if (r < 4) return; // antraštės: pavadinimas, paaiškinimas, dienos, pamokų nr.
+                const values = row.values || [];
+                const teacherCell = ((values[1] && values[1].formattedValue) || '').trim();
+                if (teacherCell) lastTeacher = teacherCell;
+                const teacher = teacherCell || lastTeacher;
+                if (!teacher) return;
+                const subjectCell = ((values[2] && values[2].formattedValue) || '').trim();
+                // Pamokų stulpeliai: 5 dienos × 8 pamokos, nuo F stulpelio (indeksas 5)
+                for (let c = 5; c <= 44; c++) {
+                    const cell = values[c];
+                    if (!cell) continue;
+                    const bg = (cell.userEnteredFormat && cell.userEnteredFormat.backgroundColor)
+                        || (cell.effectiveFormat && cell.effectiveFormat.backgroundColor);
+                    if (!isYellowColor(bg)) continue;
+                    const jsDay = Math.floor((c - 5) / 8) + 1;
+                    const period = ((c - 5) % 8) + 1;
+                    changed.add(changeKey(teacher, subjectCell, jsDay, period));
+                }
+            });
+            if (changed.size > 0) {
+                console.log(`🟡 Aptikta keitimų (geltonų langelių): ${changed.size}`);
+            }
+            return changed;
+        } catch (e) {
+            console.warn('⚠️ Nepavyko nuskaityti langelių spalvų:', e.message);
+            return empty;
+        }
+    }
 
     // Determine if current week is odd (nelyginė) or even (lyginė)
     // Weeks are counted from September 1st (school year start), not the calendar year:
@@ -789,7 +910,9 @@ async function fetchData() {
     }
 
     // Parse schedule data from rows
-    function parseSchedule(rows) {
+    // changedKeys: aibė raktų "mokytojas|dalykas|diena|pamoka" langelių,
+    // kurie Google Sheets lentelėje pažymėti geltonai (keitimai).
+    function parseSchedule(rows, changedKeys = new Set()) {
         const LESSONS_PER_DAY = 8;
         const LESSON_START_COL = 5;
         const scheduleByTeacher = {};
@@ -842,6 +965,7 @@ async function fetchData() {
 
                 for (let p = 0; p < LESSONS_PER_DAY; p++) {
                     const cellValue = (cells[dayStartCol + p] || '').trim();
+                    const cellChanged = changedKeys.has(changeKey(teacherName, subject, jsDay, p + 1));
                     if (cellValue && cellValue !== 'B') {
                         // Use the new week-aware parser
                         const weekClasses = parseWeekClasses(cellValue);
@@ -859,7 +983,8 @@ async function fetchData() {
                                     isLegend: true,
                                     splitSuffix: cls.suffix,
                                     originalClass: cellValue,
-                                    isPool: false
+                                    isPool: false,
+                                    changed: cellChanged
                                 });
                             });
                             if (weekClasses.length === 0) {
@@ -872,7 +997,8 @@ async function fetchData() {
                                     isLegend: true,
                                     splitSuffix: '',
                                     originalClass: cellValue,
-                                    isPool: false
+                                    isPool: false,
+                                    changed: cellChanged
                                 });
                             }
                         } else {
@@ -887,7 +1013,8 @@ async function fetchData() {
                                     isLegend: false,
                                     splitSuffix: cls.suffix,
                                     originalClass: cellValue,
-                                    isPool: poolMarkers[teacherName]?.[jsDay]?.[p + 1] || false
+                                    isPool: poolMarkers[teacherName]?.[jsDay]?.[p + 1] || false,
+                                    changed: cellChanged
                                 });
                             });
                         }
@@ -1203,6 +1330,12 @@ async function fetchData() {
                 if (lessons.length > 0) {
                     cellClass += ' has-lesson';
 
+                    // Keitimas: bent viena langelio pamoka geltonai pažymėta
+                    // Google Sheets lentelėje → papildomas oranžinis stilius
+                    if (lessons.some(l => l.changed)) {
+                        cellClass += ' is-changed';
+                    }
+
                     const subjectGroups = {};
                     lessons.forEach(lesson => {
                         const key = lesson.subject;
@@ -1381,7 +1514,8 @@ async function fetchData() {
     async function init() {
         try {
             const rows = await fetchData();
-            parseSchedule(rows);
+            const changedKeys = await fetchYellowCells();
+            parseSchedule(rows, changedKeys);
 
             const now = new Date();
             const today = now.getDay();
@@ -1433,7 +1567,8 @@ async function fetchData() {
                 try {
                     console.log('🔄 Refreshing schedule data...');
                     const rows = await fetchData();
-                    parseSchedule(rows);
+                    const changedKeys = await fetchYellowCells();
+                    parseSchedule(rows, changedKeys);
                     renderTimeline();
                     updateHeaderDay();
                     updateNoLessonsScreen();

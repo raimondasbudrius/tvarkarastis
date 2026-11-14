@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="lt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎵 Nematoma arfa – pamokų planas (2 pamokos)</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            background-color: #e8f0fe;
+            font-family: 'Lexend', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-weight: 600;
+            padding: 10px;
+            color: #202124;
+        }
+
+        .header-bar {
+            background: linear-gradient(135deg, #1a73e8, #1557b0);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 12px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        .header-bar h2 { margin: 0; font-size: 1.2rem; }
+        .header-bar .sub { font-size: 0.75rem; opacity: 0.9; margin-top: 3px; }
+
+        .toolbar { display: flex; gap: 8px; flex-wrap: wrap; }
+        .tool-btn {
+            font-size: 0.72rem; font-weight: 600; padding: 6px 12px; border-radius: 8px;
+            border: 2px solid rgba(255,255,255,0.7); background: rgba(255,255,255,0.15);
+            color: white; cursor: pointer; text-decoration: none;
+        }
+        .tool-btn:hover { background: white; color: #1a73e8; }
+
+        .section {
+            background: white; border-radius: 12px; padding: 16px 20px;
+            margin-bottom: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        .section h3 {
+            font-size: 1.02rem; color: #1557b0; margin: 0 0 10px;
+            padding-bottom: 6px; border-bottom: 2px solid #e8f0fe;
+        }
+        .section h4 { font-size: 0.88rem; color: #1a73e8; margin: 16px 0 6px; }
+        .section p, .section li { font-size: 0.8rem; font-weight: 500; }
+        .section ul, .section ol { padding-left: 20px; margin-bottom: 8px; }
+
+        table.plan { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
+        table.plan th {
+            background: #f8f9fa; border: 1px solid #dee2e6; padding: 6px 8px;
+            text-align: left; font-size: 0.75rem; width: 200px; vertical-align: top; color: #1557b0;
+        }
+        table.plan td { border: 1px solid #e0e0e0; padding: 6px 8px; vertical-align: top; font-weight: 500; }
+
+        table.grid { width: 100%; border-collapse: collapse; font-size: 0.76rem; }
+        table.grid th {
+            background: #f0f4f8; border: 1px solid #dee2e6; padding: 6px 6px;
+            text-align: center; font-size: 0.72rem; color: #1557b0;
+        }
+        table.grid td { border: 1px solid #e0e0e0; padding: 6px 6px; vertical-align: top; font-weight: 500; }
+        table.grid td.time { font-weight: 700; color: #1a73e8; white-space: nowrap; text-align: center; }
+        table.grid td.stage { font-weight: 700; text-align: left; }
+        table.grid tbody tr:nth-child(even) { background: #fbfdff; }
+
+        .pin {
+            background: #1a73e8; color: #fff; border-radius: 4px; padding: 1px 6px;
+            font-size: 0.7rem; font-family: ui-monospace, Menlo, Consolas, monospace; white-space: nowrap;
+        }
+        .tag {
+            display: inline-block; background: #e8f0fe; color: #1557b0; border: 1px solid #c6dafc;
+            border-radius: 10px; padding: 1px 8px; font-size: 0.68rem; margin: 1px 2px 1px 0;
+        }
+        .note, .warn, .ok {
+            padding: 8px 12px; border-radius: 6px; font-size: 0.76rem;
+            font-weight: 500; margin: 8px 0;
+        }
+        .note { background: #fff9c4; border-left: 4px solid #fbbc04; }
+        .warn { background: #fce8e6; border-left: 4px solid #d93025; }
+        .ok   { background: #e6f4ea; border-left: 4px solid #34a853; }
+
+        pre {
+            background: #f8f9fa; border: 1px solid #e0e0e0; border-radius: 8px;
+            padding: 10px; font-size: 0.7rem; overflow-x: auto; font-weight: 400;
+        }
+        code { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 0.74rem; }
+        .checklist label { display: block; font-size: 0.78rem; font-weight: 500; padding: 2px 0; }
+        .checklist input { margin-right: 6px; }
+        .footer-note { text-align: center; font-size: 0.68rem; color: #5f6368; padding: 8px; }
+        .footer-note a { color: #1a73e8; }
+
+        @media print {
+            body { background: #fff; padding: 0; font-size: 11pt; }
+            .no-print { display: none !important; }
+            .section { box-shadow: none; border: 1px solid #ddd; break-inside: avoid; page-break-inside: avoid; padding: 10px 12px; }
+            .header-bar { border-radius: 0; box-shadow: none; }
+            table.grid tbody tr { break-inside: avoid; }
+            a { color: #000; text-decoration: none; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="header-bar">
+    <div>
+        <h2>🎵 „Nematoma arfa“ – bekontaktis muzikos instrumentas</h2>
+        <div class="sub">Technologijų pamokų planas · 2 pamokos po 45 min · <b>micro:bit v2</b> + Sharp GP2Y0A21 atstumo jutiklis</div>
+    </div>
+    <div class="toolbar no-print">
+        <button class="tool-btn" onclick="window.print()">🖨 Spausdinti planą</button>
+        <a class="tool-btn" href="worksheet-arfa-kalibravimas.html">📄 Mokinio darbalapis</a>
+        <a class="tool-btn" href="starter/README.md">🔌 Schema</a>
+        <a class="tool-btn" href="index.html">🏫 Tvarkaraštis</a>
+    </div>
+</div>
+
+<div class="section">
+    <h3>1. Pamokos planas</h3>
+    <table class="plan">
+        <tr><th>Pamokos tema</th><td>„Nematoma arfa“ – bekontaktis muzikos instrumentas: atstumo jutiklio duomenų vertimas garsu</td></tr>
+        <tr><th>Dalykas</th><td>Technologijos (inžinerinė / technologinė veikla, elektronika ir programavimas)</td></tr>
+        <tr><th>Klasė</th><td>6–7 kl. (pritaikoma 5 kl. – lengvesnis variantas, 8 kl. – sudėtingesnis; žr. 10 sk.)</td></tr>
+        <tr><th>Pamokų skaičius</th><td>2 pamokos po 45 min (iš viso 90 min)</td></tr>
+        <tr><th>Vieta</th><td>Technologijų / informatikos kabinetas</td></tr>
+        <tr><th>Mokytojas</th><td>__________________________</td></tr>
+        <tr><th>Pamokos tikslas</th>
+            <td>Suprojektuoti, surinkti ir suprogramuoti bekontaktį muzikos instrumentą, kuris infraraudonųjų
+                spindulių atstumo jutiklio <b>analoginį</b> signalą paverčia muzikos garsu, ir pagrįsti savo
+                matavimų bei kalibravimo rezultatus.</td></tr>
+        <tr><th>Uždaviniai</th>
+            <td><ol style="margin-bottom:0;">
+                <li>Atskirti analoginius ir skaitmeninius signalus, paaiškinti, kas yra jutiklis (keitiklis) ir ADC.</li>
+                <li>Surinkti grandinę pagal schemą, laikantis saugos ir poliarumo reikalavimų (bendra „žemė“ / GND).</li>
+                <li>Atlikti jutiklio kalibravimą: fiksuoti duomenis lentelėje, apskaičiuoti vidurkį, nubraižyti priklausomybę.</li>
+                <li>Suprogramuoti signalo apdorojimą: glodinimą (slankusis vidurkis), kvantavimą į gamą ir garso išvestį.</li>
+                <li>Išbandyti, įvertinti ir patobulinti gaminį, pristatyti jį klasei (koncertas).</li>
+            </ol></td></tr>
+        <tr><th>Ugdomos kompetencijos</th>
+            <td><span class="tag">Pažinimo</span><span class="tag">Skaitmeninė</span>
+                <span class="tag">Kūrybiškumo</span><span class="tag">Komunikavimo</span>
+                <span class="tag">Socialinė (komandinis darbas)</span><span class="tag">Sveikatos saugojimo (saugi elektronika)</span></td></tr>
+        <tr><th>Metodai</th>
+            <td>Demonstravimas (probleminė situacija), problemiškas mokymasis, tyrimas / eksperimentas
+                (matavimas ir kalibravimas), porinis ir grupinis darbas, praktinis konstravimas,
+                tarpusavio vertinimas, refleksija („išėjimo bilietas“).</td></tr>
+        <tr><th>Priemonės</th>
+            <td>Žr. 3 sk. „Komplektas grupei“. Papildomai: kompiuteris su <code>makecode.microbit.org</code>
+                (arba išsaugoti <code>.hex</code> failai darbui be interneto), liniuotės, kartoniniai vamzdeliai,
+                darbalapiai, vertinimo rubrika.</td></tr>
+        <tr><th>Vertinimas</th>
+            <td><b>Formuojamasis:</b> stebėjimas, klausimai darbų eigoje, kalibravimo lentelė, „išėjimo bilietas“
+                (1 pamokos pabaiga).<br>
+                <b>Apibendrinamasis:</b> rubrika (9 sk.) – matavimai, programos logika, elektronika ir sauga,
+                bendradarbiavimas, pristatymas; grupės gaminio demonstravimas koncerte.</td></tr>
+        <tr><th>Sauga</th>
+            <td>Laidai jungiami <b>esant išjungtam maitinimui</b>; baterijų dėklo poliarumas; neviršyti micro:bit
+                srovės ribų (3 V linija – iki 300 mA, per krašto jungtį – iki 190 mA); garsiakalbis jungiamas
+                <b>tik per tranzistorių</b>, ne tiesiai prie kontakto; <b>B50K</b> garsumo potenciometras jungiamas
+                stiprintuvo <b>signalo</b> pusėje, niekada – nuosekliai su garsiakalbiu; laidų nudengimas ir žirklės – tik prižiūrint mokytojui.</td></tr>
+        <tr><th>Namų darbai</th>
+            <td>Pasirinktinai: (a) papildyti kalibravimo grafiką ir parašyti 2–3 sakinių išvadą;
+                (b) sugalvoti vieną savo patobulinimą (brėžinys / aprašymas); (c) rasti vieną realų bekontakčio
+                jutiklio panaudojimo pavyzdį (parkavimo jutikliai, gestų valdymas, instrumentai žmonėms su negalia).</td></tr>
+        <tr><th>Refleksija</th>
+            <td>„Kas buvo triukšminga / nestabilu?“, „Kodėl atsitiktiniai dažniai skamba blogai?“,
+                „Ką pakeisčiau, jei turėčiau dar vieną pamoką?“</td></tr>
+    </table>
+</div>
+
+
+<div class="section">
+    <h3>2. Didžioji idėja ir projekto aprašymas</h3>
+    <div class="ok"><b>Didžioji idėja:</b> jutiklis paverčia fizinį dydį elektriniu signalu, o programa tą
+        signalą paverčia sprendimu – arba muzika.</div>
+    <p>Mokiniai kuria <b>nekontaktinį instrumentą</b>: rankos atstumas iki infraraudonųjų spindulių jutiklio
+        valdo garso aukštį, o micro:bit garsą išduoda per pjezo diską (2 pamokoje – per garsiakalbį su
+        tranzistoriniu stiprintuvu). Projektas natūraliai suskaidomas į dvi dalis:</p>
+    <ul>
+        <li><b>1 pamoka – „Nuo šviesos iki skaičių ir garso“:</b> grandinės surinkimas, matavimas, kalibravimas,
+            pirmasis glissando (tolydus garso aukščio keitimas).</li>
+        <li><b>2 pamoka – „Kaip padaryti, kad skambėtų muzika“:</b> signalo glodinimas, kvantavimas į gamą,
+            valdymo elementai, repeticija ir klasės koncertas.</li>
+    </ul>
+    <p><b>Kodėl šis projektas veikia:</b> rezultatas girdimas iš karto (motyvacija), o „triukšmas“ ir
+        „blogai skambantys atsitiktiniai dažniai“ yra <i>tikros</i> inžinerinės problemos, kurias mokiniai patys
+        atranda ir patys išsprendžia – tai geriausias pretekstas kalbėti apie filtravimą, masyvus ir matavimo paklaidas.</p>
+    <div class="note"><b>Motyvacijos variklis:</b> jau pirmos pamokos pradžioje paskelbkite, kad antros pamokos
+        pabaigoje vyks <b>klasės koncertas</b>, kuriame kiekviena grupė gros 15–20 s. Tai suteikia abiem pamokoms
+        aiškų tikslą ir terminą.</div>
+</div>
+
+<div class="section">
+    <h3>3. Komplektas grupei (2–3 mokiniai)</h3>
+    <table class="grid">
+        <thead><tr><th style="width:34%;">Komponentas</th><th style="width:12%;">Kiekis</th><th>Kam naudojamas projekte</th></tr></thead>
+        <tbody>
+            <tr><td>micro:bit v2 + krašto jungties plokštelė (breakout)</td><td>1 (2 – jei naudojamas radijas)</td><td>Valdiklis, LED ekranas, garsas, akselerometras, radijas</td></tr>
+            <tr><td><b>Sharp GP2Y0A21</b> IR atstumo jutiklis (10–80 cm)</td><td>1</td><td><b>Pagrindinis:</b> rankos atstumas → garso aukštis</td></tr>
+            <tr><td>Pjezo diskas (pjezo elementas)</td><td>1</td><td>Pagrindinis garso šaltinis (saugu, nereikia stiprintuvo)</td></tr>
+            <tr><td>Garsiakalbis 385980-001 (iš kompiuterio)</td><td>1</td><td>„Garsusis režimas“ per tranzistorinį stiprintuvą (2 pamoka)</td></tr>
+            <tr><td>Tranzistorius NPN: BC547 / <b>2N3904</b> / 2N2222, rezistoriai 1 kΩ (arba 470 Ω) ir 220 Ω, diodas 1N4148</td><td>po 1</td><td>Garsiakalbio stiprintuvas ir apsauga nuo induktyvumo „spyrio“</td></tr>
+            <tr><td>3 ašių džoystickas (X, Y + mygtukas)</td><td>1</td><td>Oktava / garso tembras / nutildymas (laikymas)</td></tr>
+            <tr><td>Lietimo jutiklis TTP223</td><td>1</td><td>„Styga“ / nutildymas arba režimo perjungimas</td></tr>
+            <tr><td>Mygtukas</td><td>1</td><td>Režimų perjungimas (jei neužtenka micro:bit A/B mygtukų)</td></tr>
+            <tr><td>Potenciometras <b>B50K</b> (50 kΩ, <b>tiesinis</b>) + rankenėlė</td><td>1</td><td><b>Garsiakalbio garsumas</b> (2 pamoka) – analoginis įtampos daliklis stiprintuvo <i>signalo</i> pusėje; nereikia nei kodo, nei laisvo kontakto</td></tr>
+            <tr><td>3× AA baterijų dėklas (4,5 V)</td><td>1</td><td>Jutiklio maitinimas pagal gamintojo specifikaciją (4,5–5,5 V)</td></tr>
+            <tr><td>Kondensatoriai 10 µF + 100 nF</td><td>po 1</td><td>Jutiklio maitinimo stabilizavimas (IR LED impulsai)</td></tr>
+            <tr><td>Breadboard, jungiamieji laidai, kartoninis vamzdelis, liniuotė</td><td>1 k.</td><td>Surinkimas, matavimas, apsauga nuo pašalinės IR šviesos</td></tr>
+        </tbody>
+    </table>
+    <div class="note"><b>Pasirinktinai (plėtrai):</b> magnetinis jutiklis + magnetas („slaptas raktas“),
+        LM35 temperatūros jutiklis (dermė priklauso nuo temperatūros), pasvirimo / vibracijos jutikliai
+        (nutildymas padėjus instrumentą), analoginis garso jutiklis (groja tik tylėje), išorinis
+        ADXL345 akselerometras per I²C (P19/P20), du micro:bit radijo duetui.</div>
+</div>
+
+<div class="section">
+    <h3>4. Schema ir kontaktų (pin) žemėlapis</h3>
+    <table class="grid">
+        <thead><tr><th style="width:24%;">Funkcija</th><th style="width:26%;">Komponentas</th><th style="width:12%;">Kontaktas</th><th style="width:14%;">Tipas</th><th>Pastaba</th></tr></thead>
+        <tbody>
+            <tr><td>Garso aukštis (atstumas)</td><td>GP2Y0A21 <code>Vo</code></td><td><span class="pin">P1</span></td><td>Analoginis įėjimas</td><td>Jutiklio Vcc = 4,5 V (3× AA), <b>GND bendras su micro:bit</b></td></tr>
+            <tr><td>Oktava / glissando</td><td>Džoysticko X ašis</td><td><span class="pin">P2</span></td><td>Analoginis įėjimas</td><td>Y ašis – tik jei sutinkama, kad ekranas gali mirgėti (P3/P4 dalijasi su LED matrica)</td></tr>
+            <tr><td>Laikymas (sustain)</td><td>Džoysticko mygtukas</td><td><span class="pin">P16</span></td><td>Skaitmeninis įėjimas</td><td>Laisvas kontaktas, be konflikto</td></tr>
+            <tr><td>Nutildymas / „styga“</td><td>Paprastas mygtukas <b>arba</b> TTP223 lietimo jutiklis</td><td><span class="pin">P8</span></td><td>Skaitmeninis įėjimas</td><td>Mygtukas: viena kojelė → P8, kita → GND. <b>Būtinas pull-up</b> – kodas jį įjungia (<code>pin8.set_pull(pin8.PULL_UP)</code>): neprispaustas = 1, paspaustas = 0. Reikia <code>USE_GATE = True</code></td></tr>
+            <tr><td>Pagrindinis garsas</td><td>Pjezo diskas</td><td><span class="pin">P0</span> + 220 Ω nuosekliai</td><td>Garso išvestis</td><td>Pjezo elementas yra talpinis → srovė beveik nenaudojama, saugu</td></tr>
+            <tr><td>„Garsusis režimas“</td><td>Garsiakalbis 385980-001</td><td><span class="pin">P0</span> → 1 kΩ (arba 470 Ω) → NPN bazė (BC547 / 2N3904)</td><td>Stiprintuvas</td><td>Garsiakalbis nuo 3 V į kolektorių, emiteris → GND, 1N4148 lygiagrečiai garsiakalbiui</td></tr>
+            <tr><td><b>Garsiakalbio garsumas</b></td><td>Potenciometras <b>B50K</b> (50 kΩ, tiesinis)</td><td><b>kontaktas nenaudojamas</b></td><td>Analoginis daliklis</td><td>Stiprintuvo <i>signalo</i> pusėje: <span class="pin">P0</span> → vienas kraštinis išvadas, <span class="pin">GND</span> → kitas kraštinis, <b>vidurinis (šluotelė)</b> → 1 kΩ → bazė. Veikia be nė vienos kodo eilutės</td></tr>
+            <tr><td>Garsumas (programinis, pasirinktinai)</td><td>Potenciometro vidurinis išvadas</td><td><span class="pin">P2</span> <i>(sukeisti su džoistiku)</i></td><td>Analoginis įėjimas</td><td>Analoginių kontaktų tik trys (P0, P1, P2) – rinkitės du iš {IR, X, Y, potenciometras}. <code>music.setVolume()</code> keičia <b>įtaisytą</b> garsiakalbį, ne P0 signalo amplitudę</td></tr>
+        </tbody>
+    </table>
+
+    <h4>Jungimo schema (1 pamoka – minimalus variantas)</h4>
+    <pre>
+   3× AA (4,5 V) ┌──────────── GP2Y0A21 ────────────┐
+       +  ───────┤ Vcc          [IR LED]  [fotodiodas]│
+                 │                                    │── Vo ──── P1 (micro:bit)
+       −  ───┬───┤ GND                                │
+             │   └────────────────────────────────────┘
+             │      (10 µF + 100 nF tarp Vcc ir GND, kuo arčiau jutiklio)
+             │
+             └────────────── GND (micro:bit)   ← BENDRA ŽEMĖ (būtina!)
+
+   P0 ──[ 220 Ω ]──┬── pjezo diskas ──┬── GND (micro:bit)
+                   └──────────────────┘
+    </pre>
+
+    <h4>„Garsusis režimas“ – garsiakalbis per tranzistorių su B50K garsumo reguliavimu (2 pamoka)</h4>
+    <pre>
+   P0 ─────────── kraštinis A ┐
+                              │  B50K potenciometras (50 kΩ, tiesinis)
+   GND ────────── kraštinis B ┘
+                   šluotelė ──[ 1 kΩ ]── B (BC547)     3 V ── garsiakalbis (+) ──┐
+                                           E ── GND                               │ C
+                                                                                  ▼
+                                                              garsiakalbis (−) → kolektorius
+
+   1N4148 lygiagrečiai garsiakalbiui: juostelė (katodas) į 3 V pusę.
+   Be potenciometro schema lygiai tokia pati: P0 ──[ 1 kΩ ]── B (= potenciometras iki galo, garsiausia).
+    </pre>
+
+    <div class="warn"><b>Kodėl garsiakalbio negalima jungti tiesiai prie P0?</b> Tai pagrindinis
+        elektronikos „aha“ momentas šioje pamokoje. Logikos kontaktas atiduoda tik kelis mA
+        (nRF52833: ~0,5 mA įprasta, ~5 mA padidinta apkrova), o krašto jungtis – iki 190 mA
+        (3 V linijos LDO – 300 mA, iš kurių 90 mA rezervuota onboard periferijai).
+        8 Ω garsiakalbis prie 3,3 V reikalautų ~400 mA. Todėl micro:bit tik <b>valdo</b> energiją,
+        o energiją <b>duoda</b> maitinimo šaltinis – tam ir reikalingas tranzistorius.</div>
+
+    <div class="warn"><b>2N3904 ar BC547? Abu tinka, bet išvadai veidrodiniai!</b>
+        Žiūrint į tranzistorių, kai <b>plokščia pusė atsukta į jus, o kojelės nukreiptos žemyn</b>:
+        <b>2N3904 = E–B–C</b> (kairėn: emiteris, bazė, kolektorius), <b>BC547 = C–B–E</b>,
+        <b>2N2222/PN2222 = E–B–C</b>. Sumaišius emiterį su kolektoriumi garsas bus labai tylus
+        arba jo visai nebus – tai dažniausia „nėra garso“ priežastis po neteisingo jungimo.
+        Bazės rezistorius: <b>470 Ω</b> duoda ~5,5 mA (garsiau, micro:bit kontakto ribos pakrašty),
+        <b>1 kΩ</b> – ~2,6 mA (garantuotai saugu). Srovės riba: 8 Ω garsiakalbis prie 3,3 V
+        norėtų iki ~400 mA, o tai viršija ir micro:bit 3 V linijos (~190 mA), ir 2N3904 (200 mA)
+        ribas – todėl tyliai grojant naudokite 3 V, o garsiau – nuoseklų <b>22 Ω / 1 W</b> rezistorių,
+        16–32 Ω garsiakalbį arba galingesnį 2N2222.</div>
+
+    <h4>Garsiakalbio garsumas – potenciometras <b>B50K</b> (2 pamoka)</h4>
+    <p><b>B50K</b> = <b>50 kΩ sukamasis potenciometras su tiesine („B“) charakteristika</b> (žymimas ir
+        <code>503</code> arba <code>50K</code>; <code>A50K</code> būtų logaritminė / „garso“ versija).
+        Tai stiprintuvo <b>pagrindinis garsumas</b>, jungiamas kaip įtampos daliklis <b>signalo</b>
+        pusėje – <b>ne</b> garsiakalbio maitinimo grandinėje:</p>
+    <table class="grid">
+        <thead><tr><th style="width:34%;">Potenciometro išvadas</th><th>Prijungti prie</th></tr></thead>
+        <tbody>
+            <tr><td>Kraštinis A</td><td><span class="pin">P0</span> (micro:bit garso išvestis)</td></tr>
+            <tr><td>Kraštinis B</td><td><span class="pin">GND</span> (micro:bit žemė)</td></tr>
+            <tr><td><b>Vidurinis (šluotelė)</b></td><td><b>1 kΩ → tranzistoriaus bazė</b> (BC547 / 2N3904)</td></tr>
+        </tbody>
+    </table>
+    <ul>
+        <li><b>Nereikia nei kodo, nei kontakto.</b> Trys analoginiai kontaktai (P0, P1, P2) lieka laisvi
+            jutikliui ir džoistikui, todėl grupė gali turėti ir <i>atstumas → garso aukštis</i>, ir
+            <i>oktavą</i>, ir <i>garsumą</i> vienu metu.</li>
+        <li><b>Gali tik patildyti – niekada pagarsinti ar pakenkti.</b> Sukus iki galo bazės srovė yra
+            lygiai tokia, kaip ir anksčiau: (3,3 V − 0,7 V) / 1 kΩ ≈ <b>2,6 mA</b>; pats potenciometras
+            naudoja 3,3 V / 50 kΩ ≈ <b>66 µA</b> ir išsklaido ~0,2 mW – tinka bet koks 0,1–0,25 W.</li>
+        <li><b>Nemokama saugos premija:</b> mažesnė bazės srovė išveda tranzistorių iš soties, todėl
+            kolektoriaus srovė krinta link β·Ib – viduryje keliolika–keliasdešimt mA vietoj ~400 mA,
+            kurių norėtų 8 Ω garsiakalbis (BC547 – 100 mA, 2N3904 – 200 mA). Sukus iki galo situacija
+            nesikeičia, todėl 22 Ω / 16–32 Ω garsiakalbio patarimas aukščiau galioja toliau.</li>
+        <li><b>Pirmieji ~20 % sukimo – tyla:</b> bazės ir emiterio sandūrai reikia ~0,7 V, kad tranzistorius
+            apskritai atsidarytų. Tai nemokama fizikos pamokėlė ir tikra „išjungta“ padėtis koncertui.</li>
+        <li><b>Sukant pagal laikrodžio rodyklę tylėja?</b> Sukeiskite vietomis du kraštinius laidus –
+            kuris išvadas yra „pagal rodyklę“, priklauso nuo paties potenciometro.</li>
+        <li><b>Ar mano „B“ tikrai tiesinis?</b> Multimetras, rankenėlė viduryje: tarp šluotelės ir bet kurio
+            kraštinio išvado turi būti ≈ <b>25 kΩ</b>. Logaritminis (A) vienoje pusėje rodytų ≈5–10 kΩ –
+            dalis senesnių europinių potenciometrų raides naudoja atvirkščiai, tad matavimas patikimesnis
+            už raidę.</li>
+    </ul>
+    <div class="warn"><b>❌ Niekada junkite 50 kΩ nuosekliai su garsiakalbiu.</b> 8 Ω prieš 50 000 Ω –
+        garsiakalbiui atitenka ~0,02 % maitinimo įtampos, todėl tylu bus <i>kiekvienoje</i> padėtyje,
+        be to mažas potenciometras turėtų išsklaidyti visą kolektoriaus srovę. <b>Nuosekliam</b>
+        8 Ω garsiakalbio slopinimui reikia <b>10–100 Ω, ≥1 W</b> (pvz., B100R kartu su esamu 22 Ω).
+        <b>🔈 Jei naudojamas pjezo diskas, o ne garsiakalbis:</b> nuosekliai su pjezo 50 kΩ susilpnina
+        tik ~3–7 kartus (pjezo yra talpa, Xc ≈ 18 kΩ esant 440 Hz) ir kartu „patamsina“ tembrą
+        (R + C = žemųjų dažnių filtras). Pjezo diskui geriau tinka <b>B10K</b> nuosekliai – arba
+        statykite stiprintuvą ir naudokite B50K pagal schemą aukščiau.</div>
+    <div class="note"><b>💻 Kodėl neužtenka <code>music.setVolume()</code> / garsumo bloko?</b> MakeCode jį
+        apibūdina kaip <i>„sintezatoriaus garsumą“</i> (0–255): V2 plokštėje girdimas garsas pirmiausia
+        sklinda iš <b>įtaisyto</b> garsiakalbio, todėl prie P0 prijungtas tranzistorinis stiprintuvas į
+        mygtuką B reaguoja mažai arba visai nereaguoja. Be to tai <i>programinis</i> garsumas: neturi
+        tikros „išjungta“ padėties, V1 plokštėje neveikia ir priklauso nuo veikiančio ciklo.
+        Potenciometras yra <i>aparatūrinis</i> reguliavimas – veikia visada.
+        <b>Klasės eksperimentas:</b> prijunkite ausines prie P0 + GND ir kelis kartus paspauskite B –
+        ar garsas keičiasi? Tada pasukite potenciometrą ir palyginkite.
+        Tegul viena grupė pristato skirtumą: <i>aparatūrinis</i> prieš <i>programinį</i> garsumą. <b>🎛 Matavimo sąsaja:</b> potenciometras yra toks pat keitiklis
+        (kampas → įtampa), kaip IR jutiklis (atstumas → įtampa) – tik judesį čia atlieka patys mokiniai.
+        Šluotelės įtampos nuskaitymas per <span class="pin">P2</span> (ADC) yra vienos eilutės plėtra ir
+        puikus „ta pati idėja, kitas jutiklis“ momentas.</div>
+
+    <h4>Kiek voltų reikia jutikliui? (ar užtenka 3 V?)</h4>
+    <table class="grid">
+        <thead><tr><th style="width:20%;">Maitinimas</th><th style="width:11%;">Įtampa</th><th style="width:16%;">Darbinis nuotolis</th><th style="width:18%;">Vo / ADC</th><th>Vertinimas</th></tr></thead>
+        <tbody>
+            <tr><td>micro:bit <b>3 V</b> kontaktas</td><td>3,0–3,3 V</td><td>~5–35 cm</td><td>~0,3–1,7 V / ~95–510</td>
+                <td><b>Užtenka!</b> Mažiausiai detalių ir <b>bendra žemė gaunama automatiškai</b> –
+                    išnyksta dažniausia jungimo klaida. Kaina: naudojama tik ~pusė ADC diapazono.</td></tr>
+            <tr><td><b>3× AA</b> dėklas</td><td>4,5 V</td><td>10–80 cm (pagal spec.)</td><td>~0,4–2,5 V / ~125–775</td>
+                <td>Rekomenduojama, jei norite viso darbalapyje numatyto 10–80 cm ruožo.
+                    <b>Bendras GND privalomas.</b></td></tr>
+            <tr><td>USB <b>5 V</b> (galios bankas / adapteris)</td><td>5,0 V</td><td>10–80 cm (nominalas)</td><td>0,4–3,1 V / 125–950</td>
+                <td>Stabiliausia (duomenų lapo tipinė reikšmė). <code>Vo</code> vis tiek &lt; 3,3 V → saugu.</td></tr>
+            <tr><td>4× AA</td><td>6 V</td><td>–</td><td>–</td><td><b>Nenaudoti</b> – viršija 5,5 V maksimumą.</td></tr>
+        </tbody>
+    </table>
+    <div class="note"><b>Kodėl apskritai specifikacijoje 4,5–5,5 V?</b> Jutiklio viduje yra IR diodo
+        impulsinis draiveris ir stiprintuvas, suderinti būtent šiai įtampai. Sumažinus iki 3 V diodas
+        „nebeapšviečia“ tolimų objektų, todėl kreivė susispaudžia ir tampa statesnė arti.
+        Svarbu: net maitinant 5 V, <code>Vo</code> niekada nepakyla aukščiau ~3,1 V – todėl jutiklį
+        galima jungti <b>tiesiai</b> prie micro:bit, kurio kontaktai nėra atsparūs 5 V.
+        Srovė ~33–50 mA (impulsais) – micro:bit 3 V linija tai atlaiko (kontaktų riba ~190 mA).
+        <b>Išvada mokytojui:</b> jei neturite baterijų dėklų – drąsiai maitinkite iš 3 V kontakto,
+        tik darbalapyje matuokite iki 40 cm ir įrašykite <b>savo</b> kalibravimo reikšmes.
+        Tegul 1–2 grupės palygina abu variantus ir tai aptarkite kaip „darbą už duomenų lapo ribų“.</div>
+
+    <div class="ok"><b>Kodėl pirmiausia pjezo, o ne garsiakalbis?</b> Pjezo elementas yra talpinis
+        (kelios nF), todėl prie garso dažnių sunaudoja beveik jokios srovės – jį galima drąsiai
+        jungti per 220 Ω tiesiai prie P0. Taip 1 pamokoje mokiniai iš karto gauna garsą be
+        sudėtingos grandinės, o tranzistorius tampa prasmingu 2 pamokos iššūkiu.</div>
+
+    <div class="note"><b>Mygtukas prie P8 – kodėl neužtenka dviejų laidų?</b>
+        Jungimas teisingas: viena mygtuko kojelė → <span class="pin">P8</span>, kita →
+        <span class="pin">GND</span>. Bet kai mygtukas neprispaustas, P8 yra <b>laisvas
+        (floating)</b> – micro:bit kontaktai yra didelės varžos įėjimai, todėl jie „gaudo“ triukšmą
+        ir grąžina atsitiktinius 0/1. Pasekmė pamokoje: arfa groja pati arba tylia be priežasties.
+        Sprendimas – <b>pull-up rezistorius</b>: vidinis (~13 kΩ į 3 V, MicroPython
+        <code>pin8.set_pull(pin8.PULL_UP)</code>, MakeCode <i>set pull → pull-up</i>) arba išorinis
+        10 kΩ nuo P8 į 3 V. Tada neprispaustas = 1, paspaustas = 0 (todėl logika yra
+        <i>active-low</i> – tai puiki proga aptarti, kodėl gamintojai taip daro).
+        <b>Niekada</b> nejunkite mygtuko tiesiai tarp 3 V ir GND – tai trumpas jungimas.
+        Tai pats pigiausias „aha“ momentas apie skaitmeninio įėjimo būsenas.</div>
+
+    <div class="warn"><b>Praktinė detalė, kuri dažnai „sugadina“ pamoką.</b> Krašto jungtyje
+        <b>didieji žiedai</b> yra tik <span class="pin">P0</span>, <span class="pin">P1</span>,
+        <span class="pin">P2</span>, <span class="pin">3V</span> ir <span class="pin">GND</span>.
+        <b>P8 yra mažasis kontaktas</b> – prie jo krokodilo gnybto neprilipdysite, reikia breakout
+        plokštelės arba plono laiduko. Jei grupė neturi džoistiko (P2 laisvas), mygtuką patogiausia
+        jungti prie <b>P2</b> (kode: <code>GATE_PIN = pin2</code>). Kitas tipiškas atvejis: gnybtas
+        užmautas ant <b>3V</b> vietoj <b>GND</b> – tada P8 visada = 1 ir instrumentas tylėja.
+        Dar vienas: 4 kojelių mygtuke panaudojamos <b>tos pačios pusės</b> kojelės (jos sujungtos
+        viduje) – reikia imti priešingų pusių porą. Prieš ieškant klaidų kode, mygtuką verta
+        patikrinti 4 eilučių programa (žr. <code>starter/README.md</code>, 3.4 sk.).</div>
+</div>
+
+<div class="section">
+    <h3>5. Pirmos pamokos eiga – „Nuo šviesos iki skaičių ir garso“ (45 min)</h3>
+    <table class="grid">
+        <thead><tr><th style="width:11%;">Laikas</th><th style="width:17%;">Etapas</th><th style="width:44%;">Veikla</th><th>Mokytojo pastabos</th></tr></thead>
+        <tbody>
+            <tr>
+                <td class="time">0–5</td><td class="stage">Įkvepianti pradžia (hook)</td>
+                <td>Mokytojas pagroja paruošta „arfa“ (arba 60 s teremino įrašas). Klausimas klasei:
+                    <i>„Kaip instrumentas žino, kur mano ranka? Juk nėra ko paliesti!“</i>
+                    Mintis – pora – pasidalijimas. Paskelbiamas tikslas: <b>koncertas 2 pamokos pabaigoje</b>.</td>
+                <td>Nerodykite kodo. Tegul mokiniai spėlioja – jų hipotezės bus patikrintos matavimais.</td>
+            </tr>
+            <tr>
+                <td class="time">5–12</td><td class="stage">Trumpas teorijos įvadas</td>
+                <td>Tik 3 sąvokos: (1) jutiklis = keitiklis (fizikinis dydis → elektrinis signalas);
+                    (2) Sharp GP2Y0A21 siunčia moduliutus IR impulsus ir matuoja atspindį → <b>analoginė įtampa</b>;
+                    (3) analoginis vs skaitmeninis signalas; micro:bit ADC yra 10 bitų: 0–1023 per 0–3,3 V,
+                    taigi 1 žingsnis ≈ 3,2 mV. Parodomas gamintojo atstumo/įtampos grafikas.</td>
+                <td>Paklauskite: <i>„Ar grafikas tiesinis? Ką tai reikš mūsų programai?“</i> – tai sėklos 2 pamokai.</td>
+            </tr>
+            <tr>
+                <td class="time">12–22</td><td class="stage">Grandinės surinkimas</td>
+                <td>Grupės jungia: jutiklis prie 3× AA dėklo, <code>Vo</code> → P1, <b>bendra GND</b>,
+                    pjezo diskas + 220 Ω → P0 ir GND. Ant stalo priklijuota liniuotė – rankos padėčiai fiksuoti.
+                    Prieš įjungiant – grupės „jungimo inspektorius“ patikrina poliarumą ir pasirašo darbalapyje.</td>
+                <td>Didžiausia klaida šiame etape – nebendra žemė. Projektykite teisingą schemą visą laiką.</td>
+            </tr>
+            <tr>
+                <td class="time">22–34</td><td class="stage">Matavimas ir kalibravimas <span class="tag">tyrimas</span></td>
+                <td>Kodas 1: <code>analogReadPin(P1)</code> → <code>serial.writeValue("raw", ...)</code> →
+                    skaičius ekrane → <code>plotBarGraph</code>. Toliau <b>pagrindinė mokslinė veikla</b>:
+                    ranka laikoma 10 / 15 / 20 / 25 / 30 / 40 / 50 cm atstumu, kiekvienoje padėtyje 3 matavimai,
+                    apskaičiuojamas vidurkis, taškai perkeliami į grafiką (darbalapis).
+                    Pabaigoje – 5 cm „aklosios zonos“ matavimas.</td>
+                <td>Vaikščiokite ir klauskite: <i>„Kas nutinka arčiau nei 8 cm?“</i> Mokiniai patys atranda
+                    atvirkštinę, netiesinę priklausomybę – tai pamokos branduolys.</td>
+            </tr>
+            <tr>
+                <td class="time">34–42</td><td class="stage">Pirmasis garsas</td>
+                <td>Kodas 2: <b>savo išmatuotas</b> min/max reikšmes „susieti“ (map) su 262–880 Hz ir
+                    <code>ringTone(dažnis)</code>. Laisvas glissando – momentinis džiaugsmas (dažniausiai su ovacijomis).</td>
+                <td>Pabrėžkite: į map bloką rašomi <b>savo</b> skaičiai iš lentelės, ne mokytojo.</td>
+            </tr>
+            <tr>
+                <td class="time">42–45</td><td class="stage">„Išėjimo bilietas“ + tvarka</td>
+                <td>Du klausimai raštu: <i>„Kas tavo garse buvo triukšminga / nestabilu?“</i> ir
+                    <i>„Ko reikia, kad tai taptų muzika, o ne triukšmu?“</i></td>
+                <td>Jų atsakymai = 2 pamokos darbotvarkė (filtravimas + gama). Perskaitykite juos 2 pamokos pradžioje.</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<div class="section">
+    <h3>6. Antros pamokos eiga – „Kaip padaryti, kad skambėtų muzika“ (45 min)</h3>
+    <table class="grid">
+        <thead><tr><th style="width:11%;">Laikas</th><th style="width:17%;">Etapas</th><th style="width:44%;">Veikla</th><th>Mokytojo pastabos</th></tr></thead>
+        <tbody>
+            <tr>
+                <td class="time">0–4</td><td class="stage">Apibendrinimas</td>
+                <td>Perskaitomi 3 „išėjimo bilietai“. Ant lentos užrašomos dvi problemos:
+                    <b>dreifavimas (jitter)</b> ir <b>atsitiktiniai dažniai skamba blogai</b>.
+                    Du sprendimai: filtravimas ir kvantavimas.</td>
+                <td>Leiskite mokiniams patiems suformuluoti problemas – tada sprendimai bus „jų“.</td>
+            </tr>
+            <tr>
+                <td class="time">4–12</td><td class="stage">Signalo glodinimas</td>
+                <td>Slankusis vidurkis iš paskutinių 5 matavimų (masyvas). Palyginimas „prieš / po“.
+                    Toliau <b>inžinerinis kompromisas</b>: GP2Y0A21 atsinaujina kas ~38 ms, todėl dažniau
+                    matuoti nėra prasmės; 5 matavimai ≈ 250 ms delsą – glodžiau, bet mažiau jautriai.
+                    Grupės pasirenka 3, 5 arba 8 ir <b>pagrindžia</b> pasirinkimą. Greitoms grupėms –
+                    histerezė (dead-band).</td>
+                <td>Klauskite: <i>„Kas geriau – tikslu ar greita?“</i> Teisingo atsakymo nėra, tai ir yra inžinerija.</td>
+            </tr>
+            <tr>
+                <td class="time">12–22</td><td class="stage">Gama ir masyvai</td>
+                <td>Dažnių masyvas (C-dur pentatonika: 262, 294, 329, 392, 440, 523 Hz).
+                    Glodintas atstumas → <b>indeksas 0–5</b> → tikslus natos dažnis → ekrane natos pavadinimas.
+                    Rezultatas: <b>sugadinti garso nebeįmanoma</b>. Sąvoka: kvantavimas (tolydus įėjimas →
+                    diskreti išvestis).</td>
+                <td>Čia mokiniai „užsidega“ – pirmą kartą girdisi muzika. Duokite 2 min tiesiog pažaisti.</td>
+            </tr>
+            <tr>
+                <td class="time">22–32</td><td class="stage">Valdymo elementai <span class="tag">pasirinkimas</span></td>
+                <td>Kiekviena grupė pasirenka <b>bent 2</b>: džoistiko X → oktava; džoistiko mygtukas arba
+                    lietimo jutiklis → laikymas / nutildymas; mygtukas A → gamos keitimas (dur / pentatonika / moll);
+                    mygtukas B → garsumas (<code>music.setVolume</code> – sintezatoriaus garsumas, V2 tai pirmiausia <b>įtaisytas</b> garsiakalbis); <b>įtaisytasis akselerometras → vibrato</b>
+                    (laidų nereikia!); <b>pjezo „prirengimas“ (pluck) tik tada, kai natos indeksas pasikeičia</b>
+                    → būsenos pokyčio aptikimas; <b>B50K potenciometras → analoginis garsiakalbio garsumas</b>
+                    (gryna aparatūra, be kodo – 4 sk.); tranzistorinis „garsusis režimas“.</td>
+                <td>Vibrato iš akselerometro yra „nemokama“ funkcija – ją pamėgsta visos grupės.</td>
+            </tr>
+            <tr>
+                <td class="time">32–40</td><td class="stage">Repeticija ir koncertas</td>
+                <td>Kiekviena grupė groja 15–20 s. Nominacijos: <i>švariausias tonas</i>,
+                    <i>išraiškingiausia</i>, <i>geriausia klaidų paieškos istorija</i>,
+                    <i>tvarkingiausias jungimas</i>. Pasirinktinai: natų registravimas per serial →
+                    CSV eksportas → visos klasės „melodijos grafikas“; arba <code>radio.sendValue</code>
+                    į „įrašytojo“ micro:bit.</td>
+                <td>Paskirkite mokinį „garso režisieriumi“ – jis valdo nutildymą tarp pasirodymų ir <b>B50K garsumo rankenėlę</b> koncerto metu.</td>
+            </tr>
+            <tr>
+                <td class="time">40–45</td><td class="stage">Refleksija ir vertinimas</td>
+                <td>Savivertės rubrika (9 sk.), „išėjimo bilietas“, tranzistorinio stiprintuvo demonstracija.
+                    Plėtros užduočių meniu (10 sk.).</td>
+                <td>Užbaikite klausimu: <i>„Kur dar gyvenime naudojamas bekontaktis atstumo jutiklis?“</i></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<div class="section">
+    <h3>7. Programos kodo planas</h3>
+    <h4>7.1 MakeCode blokai (pagrindinis variantas mokiniams)</h4>
+    <ol>
+        <li><b>On start:</b> kintamieji <code>NEAR_RAW</code> ir <code>FAR_RAW</code> (iš <i>savo</i> kalibravimo lentelės),
+            masyvas <code>GAMA = [262, 294, 329, 392, 440, 523]</code>, masyvas <code>NAZV = ["C4","D4","E4","G4","A4","C5"]</code>,
+            <code>oktava = 0</code>, tuščias sąrašas <code>istorija</code>, <code>paskutine = -1</code>.</li>
+        <li><b>Forever:</b> <code>raw = pins.analogReadPin(AnalogPin.P1)</code> → pridėti į <code>istorija</code>,
+            seniausią pašalinti → <code>vid = suma / 5</code>.</li>
+        <li><b>Susiejimas:</b> <code>idx = pins.map(vid, FAR_RAW, NEAR_RAW, 0, 5)</code> → apriboti su
+            <code>Math.min</code> / <code>Math.max</code>.</li>
+        <li><b>Būsenos pokytis:</b> <code>if idx != paskutine</code> →
+            <code>music.ringTone(GAMA[idx] * Math.pow(2, oktava))</code> →
+            <code>basic.showString(NAZV[idx])</code> → <code>paskutine = idx</code>.</li>
+        <li><b>Įvestis:</b> <code>on button A pressed</code> → <code>oktava = (oktava + 1) % 3</code>;
+            <code>on button B pressed</code> → kitos gamos masyvas.</li>
+        <li><b>Nutildymas:</b> <code>on logo pressed</code> arba lietimo jutiklis P8 = 1 → <code>music.ringTone(0)</code>.</li>
+        <li><b>Vibrato (plėtra):</b> dažnį padauginti iš <code>1 + input.acceleration(Dimension.X) / 4000</code>.</li>
+    </ol>
+    <div class="note"><b>Kodėl <code>ringTone</code>, o ne <code>playTone</code>?</b> <code>playTone</code>
+        blokuoja programą (tereminui netinka), o <code>ringTone</code> groja tolydžiai ir leidžia toliau
+        skaityti jutiklį. MicroPython atitikmuo – <code>music.pitch(daznis, wait=False)</code>.</div>
+    <div class="note"><b>Garsumui bloko nereikia</b>, jei <b>B50K</b> potenciometras prijungtas prie
+        stiprintuvo (4 sk.): jis slopina bazės srovę aparatūriškai, todėl veikia ir su išoriniu
+        garsiakalbiu. <code>music.setVolume()</code> nustato <i>sintezatoriaus</i> garsumą, kuris V2
+        plokštėje pirmiausia reiškia <i>įtaisytą</i> garsiakalbį – todėl stiprintuvas jo dažnai „negirdi“.</div>
+
+    <h4>7.2 MicroPython (plėtrai / 8 klasei)</h4>
+    <p>Pilnas, komentuotas pradinis failas: <a href="starter/air_harp.py"><code>starter/air_harp.py</code></a>
+        (jungimo aprašymas – <a href="starter/README.md"><code>starter/README.md</code></a>). Branduolys:</p>
+    <pre>
+raw = pin1.read_analog()          # 0..1023
+istorija.pop(0); istorija.append(raw)
+vid = sum(istorija) // 5          # slankusis vidurkis
+idx = to_index(vid, len(GAMA))    # kvantavimas į gamą
+if idx != paskutinis:             # natos PASIKEITĖ
+    music.pitch(GAMA[idx] * 2 ** oktava, wait=False)
+    </pre>
+    <div class="warn"><b>Svarbu mokytojui:</b> prieš pamoką padarykite 15 min bandymą su <b>savo</b>
+        jutikliu ir pjezo disku – kiekvienas GP2Y0A21 egzempliorius šiek tiek skiriasi, todėl
+        <code>NEAR_RAW</code> / <code>FAR_RAW</code> reikšmes faile reikia pakeisti savo matavimais.</div>
+</div>
+
+<div class="section">
+    <h3>8. Kalibravimo etaloninės reikšmės (mokytojui)</h3>
+    <p>Tai <b>apytikslės</b> gamintojo kreivės reikšmės – jos skirtos tik pasitikrinti, ar jutiklis veikia.
+        Mokiniai privalo naudoti <b>savo</b> matavimus (žr. <a href="worksheet-arfa-kalibravimas.html">darbalapį</a>).</p>
+    <table class="grid">
+        <thead><tr><th>Atstumas</th><th>Vo @ 4,5–5 V</th><th>ADC @ 4,5–5 V</th><th>Vo @ 3,3 V</th><th>ADC @ 3,3 V</th></tr></thead>
+        <tbody>
+            <tr><td>10 cm</td><td>~2,5 V</td><td>~775</td><td>~1,65 V</td><td>~510</td></tr>
+            <tr><td>15 cm</td><td>~1,9 V</td><td>~590</td><td>~1,25 V</td><td>~385</td></tr>
+            <tr><td>20 cm</td><td>~1,4 V</td><td>~435</td><td>~0,95 V</td><td>~295</td></tr>
+            <tr><td>30 cm</td><td>~0,95 V</td><td>~295</td><td>~0,63 V</td><td>~195</td></tr>
+            <tr><td>40 cm</td><td>~0,75 V</td><td>~230</td><td>~0,50 V</td><td>~155</td></tr>
+            <tr><td>50 cm</td><td>~0,6 V</td><td>~185</td><td>~0,40 V</td><td>~125</td></tr>
+            <tr><td>80 cm</td><td>~0,4 V</td><td>~125</td><td>~0,30 V</td><td>~95</td></tr>
+        </tbody>
+    </table>
+    <div class="note"><b>Trys dalykai, kuriuos mokiniai turi atrasti patys:</b>
+        (1) priklausomybė yra <b>atvirkštinė ir netiesinė</b> (arti – didelis pokytis, toli – mažas);
+        (2) arčiau nei ~8–10 cm kreivė išsiploja / apsisuka, todėl tai <b>akloji zona</b> – programoje
+        reikšmes būtina apriboti (clamp); (3) žaidimo diapazoną verta rinktis 10–60 cm.</div>
+</div>
+
+<div class="section">
+    <h3>9. Vertinimo rubrika</h3>
+    <table class="grid">
+        <thead><tr>
+            <th style="width:20%;">Kriterijus</th><th style="width:20%;">1 – pradedantis</th>
+            <th style="width:20%;">2 – pagrindinis</th><th style="width:20%;">3 – tvirtas</th><th style="width:20%;">4 – pažengęs</th>
+        </tr></thead>
+        <tbody>
+            <tr>
+                <td class="stage">Matavimas ir kalibravimas</td>
+                <td>Keli atsitiktiniai matavimai, vidurkio nėra</td>
+                <td>Lentelė užpildyta, vidurkis apskaičiuotas</td>
+                <td>Programoje naudojamos <b>savo</b> kalibravimo reikšmės, nubraižytas grafikas</td>
+                <td>Paaiškina netiesiškumą ir akląją zoną, pasiūlo geresnį susiejimą</td>
+            </tr>
+            <tr>
+                <td class="stage">Programavimo logika</td>
+                <td>Nukopijuoja pradinį kodą</td>
+                <td>Garsas kinta keičiantis atstumui</td>
+                <td>Glodinimas + gamos masyvas + natos rodymas ekrane</td>
+                <td>≥2 papildomi valdikliai, „pluck“ pagal būsenos pokytį, aiškūs kintamųjų pavadinimai</td>
+            </tr>
+            <tr>
+                <td class="stage">Elektronika ir sauga</td>
+                <td>Reikėjo pagalbos jungiant</td>
+                <td>Teisingas jungimas, bendra žemė</td>
+                <td>Paaiškina pjezo ir garsiakalbio skirtumą (srovė)</td>
+                <td>Sumontuoja ir pagrindžia tranzistorinį stiprintuvą</td>
+            </tr>
+            <tr>
+                <td class="stage">Bendradarbiavimas</td>
+                <td>Dirba vienas mokinys</td>
+                <td>Vaidmenys pasiskirstyti</td>
+                <td>Vaidmenys keičiasi, sprendimai fiksuojami</td>
+                <td>Padeda kitai grupei rasti gedimą</td>
+            </tr>
+            <tr>
+                <td class="stage">Pristatymas</td>
+                <td>Tik parodo prietaisą</td>
+                <td>Pasako, ką prietaisas daro</td>
+                <td>Paaiškina, <b>kaip</b> veikia, remdamasis savo duomenimis</td>
+                <td>Aptaria kompromisus (delsa vs glodumas) ir realius pritaikymus</td>
+            </tr>
+        </tbody>
+    </table>
+    <p style="margin-top:8px;"><b>Įsivertinimo lapas (mokiniui):</b> kiekvieną kriterijų pažymėkite 1–4 ir
+        parašykite vieną sakinį „Kitą kartą aš…“.</p>
+</div>
+
+<div class="section">
+    <h3>10. Diferencijavimas ir plėtra</h3>
+    <h4>Lengvesnis variantas (5 kl. / grupėms, kurioms sunku)</h4>
+    <ul>
+        <li>Iš anksto sujungti komplektai (mokiniai tik prijungia <code>Vo</code> → P1 ir pjezo → P0).</li>
+        <li>„Parsonso dėlionė“: iškirpti kodo blokai, kuriuos reikia sudėti teisinga tvarka (užuot rašius patiems).</li>
+        <li>Tik 3 natų gama; glodinimo nereikia.</li>
+        <li><b>Atsarginis planas be laidų:</b> jei IR jutiklis neveikia – naudoti <code>input.lightLevel()</code>
+            (rankos šešėlis) arba <code>input.soundLevel()</code> (micro:bit v2 mikrofonas).</li>
+    </ul>
+    <h4>Sudėtingesnis variantas (8 kl. / greitoms grupėms)</h4>
+    <ul>
+        <li>MicroPython versija (<code>starter/air_harp.py</code>).</li>
+        <li>Iš savo duomenų išvesti netiesinę priklausomybę <code>d ≈ a / (V − b)</code> vietoj tiesinio susiejimo.</li>
+        <li>Radijo duetas: dvi „arfos“ dalijasi viena gama ir groja kartu (grupių numeriai!).</li>
+        <li>Melodijos įrašymas į masyvą ir atkūrimas; arba natų siuntimas per serial į kompiuterį (CSV / sintezatorius).</li>
+        <li>Išorinis ADXL345 per I²C (P19/P20) su pagrindu, <b>kodėl</b> jis geresnis už įtaisytąjį.</li>
+        <li>Magnetinis jutiklis + magnetas kaip „slaptas raktas“ (įjungimas tik priliejus magnetą).</li>
+        <li>LM35: dermė ar garsumas priklauso nuo temperatūros („šaltos rankos“ efektas).</li>
+        <li><b>Potenciometro laboratorija:</b> multimetru (arba nuskaitant per P2) išmatuoti B50K dėsnį –
+            šluotelės įtampa priklausomai nuo pasukimo kampo, nubraižyti grafiką ir palyginti
+            <b>tiesinę (B)</b> su <b>logaritmine (A)</b> charakteristika; tada pagrįsti, kuri iš jų
+            tinka garsumo reguliavimui ir kodėl.</li>
+        <li><b>Dizaino užduotis:</b> suprojektuoti ir pagaminti korpusą / rėmą (kartonas, lazerinis pjovimas, 3D spausdinimas).</li>
+    </ul>
+    <div class="ok"><b>Prieinamumas:</b> jei klasėje yra mokinių su klausos ar judėjimo ypatumais – garso aukštį
+        rodykite ir vizualiai (<code>led.plotBarGraph</code>), o bekontaktis valdymas pats savaime yra
+        puikus pavyzdys, kaip technologijos padeda žmonėms su negalia groti.</div>
+</div>
+
+<div class="section">
+    <h3>11. Gedimų šalinimas (atspausdinkite ir pakabinkite klasėje)</h3>
+    <table class="grid">
+        <thead><tr><th style="width:26%;">Požymis</th><th style="width:34%;">Tikėtina priežastis</th><th>Sprendimas</th></tr></thead>
+        <tbody>
+            <tr><td>Visai nėra garso</td><td>Pjezo poliškumas / ne tas kontaktas / blokuojantis <code>playTone</code> cikle</td><td>Pirmiausia išbandykite įtaisytą garsiakalbį; naudokite <code>ringTone</code> arba <code>music.pitch(..., wait=False)</code></td></tr>
+            <tr><td>Rodyklės visada 0 arba 1023</td><td>Jutiklis nemaitinamas arba <b>nėra bendros žemės</b></td><td>Bendra GND – klaida Nr. 1; patikrinkite pirmiausia</td></tr>
+            <tr><td>micro:bit perkrauna / mirksi</td><td>Garsiakalbis „sugeria“ srovę, 3 V linija perkraunama</td><td>Tranzistorinis stiprintuvas, atskiras maitinimas, 190 mA biudžeto aptarimas</td></tr>
+            <tr><td>Reikšmės labai „šokinėja“</td><td>Pašalinė IR šviesa (saulė!), kaimyninių grupių jutikliai, nėra filtro</td><td>Kartonas vamzdelis kaip „žiūronas“, slankusis vidurkis, grupės ≥1 m atstumu, užtrauktos užuolaidos</td></tr>
+            <tr><td>Veikia tik 5–15 cm ruože</td><td>Jutiklis maitinamas 3,3 V (susispaudusi kreivė)</td><td>Perjunkite į 3× AA (4,5 V)</td></tr>
+            <tr><td>Visada ta pati nata</td><td><code>map</code> paliktos numatytosios reikšmės</td><td>Įrašykite <b>savo</b> kalibravimo skaičius</td></tr>
+            <tr><td>Garsas vėluoja / „lipa“</td><td>Per daug mėginių vidurkyje</td><td>Kompromiso aptarimas: 3 vs 8 mėginiai; trumpinkite pauzę iki ~40 ms</td></tr>
+            <tr><td>Garsas per tylus</td><td>Pjezo disko efektyvumas mažas / B50K pasuktas „iki galo žemyn“</td><td>Pridėkite kartoninį „ragą“ (garsintuvą) arba tranzistorinį garsiakalbį; <code>music.setVolume(255)</code>; pasukite garsumo potenciometrą</td></tr>
+            <tr><td>Garsumo potenciometras nieko nekeičia</td><td>50 kΩ prijungtas <b>nuosekliai su garsiakalbiu</b> arba panaudoti tik du kraštiniai išvadai</td><td>Signalo pusė: <span class="pin">P0</span> → kraštinis, <span class="pin">GND</span> → kitas kraštinis, <b>šluotelė</b> → 1 kΩ → bazė</td></tr>
+            <tr><td>Potenciometras veikia „atvirkščiai“ (sukant pagal rodyklę tylėja)</td><td>Šiam potenciometrui sukeisti kraštiniai išvadai</td><td>Sukeisti vietomis du kraštinius laidus</td></tr>
+            <tr><td>Tyli, kol rankenėlė beveik maksimali</td><td>Normalu – bazei reikia ~0,7 V, kad tranzistorius atsidarytų</td><td>Aptarkite slenkstį; „koncerto“ padėtį pažymėkite ties ~½</td></tr>
+            <tr><td>Mygtukas B / <code>music.setVolume()</code> nekeičia išorinio garsiakalbio</td><td><code>setVolume</code> nustato sintezatoriaus garsumą – V2 tai pirmiausia įtaisytas garsiakalbis</td><td>Išorinio stiprintuvo pagrindiniam garsumui naudokite B50K (signalo pusėje)</td></tr>
+        </tbody>
+    </table>
+    <div class="note"><b>Atsarginiai planai:</b> nėra interneto → iš anksto išsaugoti <code>.hex</code> failai USB laikmenoje;
+        sugedo jutiklis → <code>lightLevel()</code> „šešėlio režimas“; grupė baigė anksčiau → tranzistorinis stiprintuvas
+        arba radijo duetas; per daug triukšmo koncerte → mokinys „garso režisierius“ su nutildymo mygtuku ir <b>B50K</b> garsumo rankenėle.</div>
+</div>
+
+<div class="section">
+    <h3>12. Mokytojo pasiruošimo sąrašas (prieš 1 pamoką)</h3>
+    <div class="checklist">
+        <label><input type="checkbox"> Patikrinti <b>kiekvieną</b> GP2Y0A21 jutiklį (jie tikrai pasitaiko sugedę)</label>
+        <label><input type="checkbox"> Įdėti baterijas į visus 3× AA dėklus ir patikrinti įtampą</label>
+        <label><input type="checkbox"> Iš anksto nukirpti ir nudengti jungiamuosius laidus</label>
+        <label><input type="checkbox"> Susukti po vieną komplektą į maišelį kiekvienai grupei + atspausdinti komplektacijos lapą</label>
+        <label><input type="checkbox"> Paruošti ir išbandyti <b>mokytojo demonstracinę arfą</b> bei <code>starter/air_harp.py</code></label>
+        <label><input type="checkbox"> Išsaugoti pradinius <code>.hex</code> failus darbui be interneto</label>
+        <label><input type="checkbox"> Atspausdinti darbalapius, rubrikas ir „išėjimo bilietus“</label>
+        <label><input type="checkbox"> Priklijuoti liniuotes prie stalų (rankos atstumui fiksuoti)</label>
+        <label><input type="checkbox"> Paruošti kartoninius vamzdelius (apsauga nuo pašalinės IR šviesos)</label>
+        <label><input type="checkbox"> Uždėti rankenėles ant <b>B50K</b> garsumo potenciometrų ir patikrinti multimetru (kraštinis–kraštinis ≈ 50 kΩ, šluotelė keičiasi 0→50 kΩ, vidurinė padėtis ≈ 25 kΩ ⇒ tiesinis)</label>
+        <label><input type="checkbox"> Paruošti „Parsonso dėlionės“ juosteles lėtesnėms grupėms</label>
+        <label><input type="checkbox"> Suprojektuoti teisingo jungimo nuotrauką / schemą rodymui per projektorių</label>
+        <label><input type="checkbox"> Patikrinti klasės akustiką (ar užteks pjezo garso, ar reikia stiprintuvo)</label>
+        <label><input type="checkbox"> Sugrupuoti mokinius (2–3) ir paskirti vaidmenis: jungėjas / programuotojas / matuotojas</label>
+    </div>
+</div>
+
+<div class="section">
+    <h3>13. Realūs pavyzdžiai ir šaltiniai</h3>
+    <p><b>Kalbos pamokai praturtinti:</b> tereminas (Levas Termenas, 1920 m. – pirmasis elektroninis instrumentas,
+        grojamas be prisilietimo, naudojamas iki šiol), automobilių parkavimo jutikliai, robotai-siurbliai,
+        gestų valdymas telefonuose ir televizoriuose, bekontakčiai durų ir čiaupų jutikliai, medicininiai
+        bekontakčiai jutikliai, <b>instrumentai žmonėms su negalia</b>.</p>
+    <ul>
+        <li>micro:bit techninė dokumentacija (krašto jungtis, srovės ribos): <code>tech.microbit.org/hardware/edgeconnector/</code></li>
+        <li>MakeCode muzikos blokas (garsas generuojamas per P0): <code>makecode.microbit.org/reference/music</code></li>
+        <li>Sharp GP2Y0A21YK0F duomenų lapas (4,5–5,5 V, 10–80 cm, atstumo/įtampos kreivė)</li>
+        <li>Mokiniams skirtas darbalapis: <a href="worksheet-arfa-kalibravimas.html">Kalibravimo darbalapis</a></li>
+    </ul>
+</div>
+
+<div class="footer-note">
+    Parengta „Molėtų progimnazijos“ technologijų pamokoms ·
+    <a href="index.html">Grįžti į tvarkaraštį</a> ·
+    <a href="worksheet-arfa-kalibravimas.html">Mokinio darbalapis</a> ·
+    <a href="lesson-plan-air-harp.md">English version</a>
+</div>
+
+</body>
+</html>
+
+
+
+
+
+
+

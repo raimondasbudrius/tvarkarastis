@@ -4,6 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>🏫 Pamokų Tvarkaraštis</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#1a73e8">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Tvarkaraštis">
+    <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
     <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -2045,6 +2052,17 @@ async function fetchData() {
                 if (cached) showCachedNotice(cached.savedAt);
             }
         }, 10 * 60 * 1000);
+    }
+
+    // ===== Darbas be interneto (service worker) =====
+    // Registruojama tik per https arba localhost – atidarius failą tiesiogiai
+    // (file://) naršyklė to neleidžia, todėl tyliai praleidžiame.
+    if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('service-worker.js').catch((err) => {
+                console.warn('⚠️ Nepavyko įjungti darbo be interneto:', err.message);
+            });
+        });
     }
 
     init();

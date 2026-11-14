@@ -6,17 +6,79 @@
     <title>🏫 Pamokų Tvarkaraštis</title>
     <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --page-bg: #e8f0fe;
+            --ink: #202124;
+            --header-a: #1a73e8;
+            --header-b: #1557b0;
+            --header-ink: #ffffff;
+            --panel-bg: #ffffff;
+            --panel-soft: #ffffff;
+            --panel-alt: #f8f9fa;
+            --panel-row: #f0f4f8;
+            --border: #e0e0e0;
+            --border-strong: #dee2e6;
+            --accent: #1a73e8;
+            --lesson-bg: #e8f5e9;
+            --lesson-border: #a5d6a7;
+            --current-bg: #fff9c4;
+            --current-border: #ffd600;
+            --current-glow: rgba(255, 214, 0, 0.3);
+            --current-glow-2: rgba(255, 214, 0, 0.5);
+            --past-bg: #f5f5f5;
+            --future-bg: #fafafa;
+            --break-bg: #e3f2fd;
+            --break-border: #90caf9;
+            --changed-bg: #f0e4d0;
+            --changed-accent: #b5762f;
+            --changed-border: #e0cfb4;
+            --subject-ink: #2e7d32;
+            --teacher-ink: #555555;
+            --badge-split-bg: #ff9800;
+            --badge-split-ink: #ffffff;
+            --dot: #ffd600;
+            --day-bg: #ffffff;
+            --day-border: #1a73e8;
+            --day-ink: #1a73e8;
+            --day-hover: #e8f0fe;
+            --today-border: #34a853;
+            --today-ink: #34a853;
+            --today-active-bg: #34a853;
+            --select-bg: #ffffff;
+            --select-border: #cccccc;
+            --active-border: #1a73e8;
+            --active-bg: #e8f0fe;
+            --clear-bg: #dc3545;
+            --clear-hover: #bb2d3b;
+            --clear-ink: #ffffff;
+            --legend-border: #cccccc;
+            --spinner-track: rgba(26, 115, 232, 0.25);
+            --spinner-head: #1a73e8;
+            --notice-bg: #fff3e0;
+            --notice-border: #ffb74d;
+            --notice-ink: #8d4b00;
+            --error-bg: #ffebee;
+            --error-ink: #c62828;
+            --nl-a: #1a73e8;
+            --nl-b: #1557b0;
+            --nl-c: #0d3c7d;
+            --nl-ink: #ffffff;
+            --nl-dot: #4ade80;
+            --countdown-break: #ffd600;
+            --countdown-off: #aaaaaa;
+        }
+
         * { box-sizing: border-box; }
         body {
-            background-color: #e8f0fe;
+            background-color: var(--page-bg);
             font-family: 'Lexend', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             font-weight: 600;
             padding: 10px;
         }
 
         .header-bar {
-            background: linear-gradient(135deg, #1a73e8, #1557b0);
-            color: white;
+            background: linear-gradient(135deg, var(--header-a), var(--header-b));
+            color: var(--header-ink);
             padding: 10px 20px;
             border-radius: 12px;
             margin-bottom: 10px;
@@ -29,8 +91,11 @@
         .header-bar h2 { margin: 0; font-size: 1.2rem; }
         .current-time { font-size: 1.1rem; font-weight: bold; }
 
+        #countdownTime[data-state="break"] { color: var(--countdown-break); }
+        #countdownTime[data-state="off"] { color: var(--countdown-off); }
+
         .filter-bar {
-            background: white;
+            background: var(--panel-soft);
             padding: 10px 15px;
             border-radius: 10px;
             margin-bottom: 10px;
@@ -45,27 +110,30 @@
         .filter-bar select {
             font-size: 0.75rem;
             padding: 3px 6px;
-            border: 1px solid #ccc;
+            border: 1px solid var(--select-border);
             border-radius: 5px;
             max-width: 160px;
+            background: var(--select-bg);
+            color: var(--ink);
         }
 
         .filter-active {
-            border-color: #1a73e8 !important;
-            background-color: #e8f0fe !important;
+            border-color: var(--active-border) !important;
+            background-color: var(--active-bg) !important;
+            color: var(--ink) !important;
         }
 
         .clear-filters-btn {
             font-size: 0.7rem;
             padding: 3px 8px;
             border-radius: 5px;
-            border: 1px solid #dc3545;
-            background: #dc3545;
-            color: white;
+            border: 1px solid var(--clear-bg);
+            background: var(--clear-bg);
+            color: var(--clear-ink);
             cursor: pointer;
             font-weight: 600;
         }
-        .clear-filters-btn:hover { background: #bb2d3b; }
+        .clear-filters-btn:hover { background: var(--clear-hover); }
 
         .day-selector {
             display: flex;
@@ -77,23 +145,23 @@
 
         .day-btn {
             padding: 8px 16px;
-            border: 2px solid #1a73e8;
+            border: 2px solid var(--day-border);
             border-radius: 8px;
-            background: white;
-            color: #1a73e8;
+            background: var(--day-bg);
+            color: var(--day-ink);
             font-weight: 600;
             cursor: pointer;
             transition: all 0.2s;
             font-size: 0.8rem;
         }
 
-        .day-btn:hover { background: #e8f0fe; }
-        .day-btn.active { background: #1a73e8; color: white; }
-        .day-btn.today { border-color: #34a853; color: #34a853; }
-        .day-btn.today.active { background: #34a853; border-color: #34a853; color: white; }
+        .day-btn:hover { background: var(--day-hover); }
+        .day-btn.active { background: var(--accent); border-color: var(--accent); color: var(--header-ink); }
+        .day-btn.today { border-color: var(--today-border); color: var(--today-ink); }
+        .day-btn.today.active { background: var(--today-active-bg); border-color: var(--today-active-bg); color: var(--header-ink); }
 
         .timeline-container {
-            background: white;
+            background: var(--panel-bg);
             border-radius: 12px;
             overflow-x: auto;
             overflow-y: visible;
@@ -109,9 +177,9 @@
         }
 
         .timeline-table th {
-            background: #f8f9fa;
+            background: var(--panel-alt);
             padding: 6px 4px;
-            border: 1px solid #dee2e6;
+            border: 1px solid var(--border-strong);
             font-size: 0.65rem;
             text-align: center;
             position: sticky;
@@ -120,7 +188,7 @@
         }
 
         .timeline-table td {
-            border: 1px solid #e0e0e0;
+            border: 1px solid var(--border);
             padding: 2px 2px;
             text-align: center;
             vertical-align: middle;
@@ -132,21 +200,21 @@
         }
 
         .period-header {
-            background: #f0f4f8;
+            background: var(--panel-row);
             font-weight: bold;
             width: 55px;
             min-width: 55px;
         }
 
-        .period-header .period-num { font-size: 0.8rem; color: #1a73e8; }
+        .period-header .period-num { font-size: 0.8rem; color: var(--accent); }
         .period-header .period-time { font-size: 0.55rem; color: #666; }
         .period-header .period-break { font-size: 0.5rem; color: #999; }
 
         .class-row td:first-child {
-            background: #f0f4f8;
+            background: var(--panel-row);
             font-weight: bold;
             font-size: 0.75rem;
-            color: #1a73e8;
+            color: var(--accent);
             width: 42px;
             min-width: 42px;
             max-width: 42px;
@@ -160,59 +228,60 @@
         }
 
         .lesson-cell.has-lesson {
-            background: #e8f5e9;
-            border-color: #a5d6a7;
+            background: var(--lesson-bg);
+            border-color: var(--lesson-border);
         }
 
         .lesson-cell.is-current {
-            background: #fff9c4;
-            border: 2px solid #ffd600;
-            box-shadow: inset 0 0 10px rgba(255, 214, 0, 0.3);
+            background: var(--current-bg);
+            border: 2px solid var(--current-border);
+            box-shadow: inset 0 0 10px var(--current-glow);
             animation: pulse-current 2s infinite;
         }
 
         .lesson-cell.is-break {
-            background: #e3f2fd;
-            border: 2px solid #90caf9;
+            background: var(--break-bg);
+            border: 2px solid var(--break-border);
         }
 
         .break-indicator {
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #1a73e8;
+            color: var(--accent);
             font-size: 0.65rem;
             font-weight: bold;
         }
 
         .lesson-cell.is-past {
-            background: #f5f5f5;
+            background: var(--past-bg);
             opacity: 0.7;
         }
 
         .lesson-cell.is-future {
-            background: #fafafa;
+            background: var(--future-bg);
         }
 
         /* Keitimas: pamoka, pažymėta geltonai originale Google Sheets lentelėje.
-           Oranžinė spalva pasirinkta tam, kad būtų vizualiai atskiriama nuo
-           geltonos "dabartinės pamokos" spalvos. */
+           Vietoje oranžinio rėmelio – ramus šiltas fonas ir plona juosta
+           kairėje: ženklas pastebimas, bet netraukia akies iš visos lentelės. */
         .lesson-cell.is-changed {
-            background: #ffe0b2;
-            border: 2px solid #fb8c00;
+            background: var(--changed-bg);
+            box-shadow: inset 3px 0 0 var(--changed-accent);
         }
 
-        /* Jei pakeista pamoka yra ir dabartinė – paliekamas geltonas fonas,
-           bet oranžinis rėmelis rodo, kad tai keitimas. */
+        /* Jei pakeista pamoka yra ir dabartinė – šiltas fonas, kairėje lieka
+           keitimo juosta; pulsuojanti animacija išjungiama, kad abu ženklai
+           nesirungtų. */
         .lesson-cell.is-changed.is-current {
-            background: #fff9c4;
-            border: 2px solid #fb8c00;
-            box-shadow: inset 0 0 10px rgba(251, 140, 0, 0.35);
+            background: var(--current-bg);
+            box-shadow: inset 3px 0 0 var(--changed-accent), inset 0 0 10px var(--current-glow);
+            animation: none;
         }
 
         @keyframes pulse-current {
-            0%, 100% { box-shadow: inset 0 0 10px rgba(255, 214, 0, 0.3); }
-            50% { box-shadow: inset 0 0 20px rgba(255, 214, 0, 0.5); }
+            0%, 100% { box-shadow: inset 0 0 10px var(--current-glow); }
+            50% { box-shadow: inset 0 0 18px var(--current-glow-2); }
         }
 
         .lesson-info {
@@ -222,13 +291,13 @@
 
         .lesson-class {
             font-weight: 700;
-            color: #2e7d32;
+            color: var(--subject-ink);
             font-size: 0.62rem;
             white-space: nowrap;
         }
 
         .lesson-teacher {
-            color: #555;
+            color: var(--teacher-ink);
             font-size: 0.58rem;
             padding-left: 0;
             white-space: nowrap;
@@ -237,8 +306,8 @@
 
         .lesson-room {
             display: inline-block;
-            background: #1a73e8;
-            color: white;
+            background: var(--accent);
+            color: var(--header-ink);
             padding: 0px 3px;
             border-radius: 3px;
             font-size: 0.55rem;
@@ -247,8 +316,8 @@
 
         .room-badge {
             display: inline-block;
-            background: #1a73e8;
-            color: white;
+            background: var(--accent);
+            color: var(--header-ink);
             padding: 0px 2px;
             border-radius: 2px;
             font-size: 0.48rem;
@@ -259,8 +328,8 @@
 
         .split-badge {
             display: inline-block;
-            background: #ff9800;
-            color: white;
+            background: var(--badge-split-bg);
+            color: var(--badge-split-ink);
             padding: 0px 2px;
             border-radius: 2px;
             font-size: 0.48rem;
@@ -279,7 +348,7 @@
             display: inline-block;
             width: 8px;
             height: 8px;
-            background: #ffd600;
+            background: var(--dot);
             border-radius: 50%;
             margin-right: 3px;
             vertical-align: middle;
@@ -299,6 +368,99 @@
             font-size: 0.65rem;
         }
 
+        /* ===== Telefono vaizdas: sąrašas vietoje lentelės ===== */
+        .mobile-list { display: none; }
+
+        .ml-period {
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+            margin: 10px 2px 4px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--accent);
+        }
+        .ml-period:first-child { margin-top: 2px; }
+        .ml-period .ml-time { font-size: 0.68rem; font-weight: 600; color: #666; }
+        .ml-period .ml-now {
+            font-size: 0.6rem;
+            font-weight: 700;
+            color: #8a6a12;
+            background: var(--current-bg);
+            border: 1px solid var(--current-border);
+            border-radius: 999px;
+            padding: 0 6px;
+        }
+
+        .ml-lesson {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            background: var(--lesson-bg);
+            border: 1px solid var(--lesson-border);
+            border-radius: 8px;
+            padding: 6px 8px;
+            margin-bottom: 4px;
+        }
+        .ml-lesson.is-changed {
+            background: var(--changed-bg);
+            box-shadow: inset 3px 0 0 var(--changed-accent);
+        }
+        .ml-lesson.is-current {
+            background: var(--current-bg);
+            border-color: var(--current-border);
+        }
+        .ml-class {
+            flex: 0 0 auto;
+            min-width: 30px;
+            text-align: center;
+            background: var(--accent);
+            color: var(--header-ink);
+            border-radius: 4px;
+            padding: 1px 4px;
+            font-size: 0.65rem;
+            font-weight: 700;
+        }
+        .ml-content { flex: 1 1 auto; min-width: 0; }
+        .ml-subject { font-size: 0.78rem; font-weight: 700; color: var(--subject-ink); }
+        .ml-meta { font-size: 0.68rem; color: var(--teacher-ink); }
+        .ml-empty {
+            text-align: center;
+            color: #888;
+            padding: 24px 8px;
+            font-size: 0.8rem;
+        }
+
+        @media (max-width: 640px) {
+            body { padding: 6px; }
+
+            .header-bar {
+                flex-wrap: wrap;
+                gap: 2px 12px;
+                padding: 8px 12px;
+            }
+            .header-bar h2 { font-size: 1rem; }
+            #headerDay { font-size: 0.75rem !important; }
+            #weekType { font-size: 0.7rem !important; }
+            #countdown { font-size: 0.8rem !important; }
+            .current-time { font-size: 0.95rem; }
+
+            .filter-bar { gap: 6px; padding: 8px 10px; }
+            .filter-bar > label { display: none; }
+            .filter-bar select { flex: 1 1 45%; max-width: none; font-size: 0.8rem; padding: 6px 8px; }
+            .clear-filters-btn { flex: 0 0 auto; padding: 6px 10px; }
+
+            .day-selector { gap: 4px; }
+            .day-btn { flex: 1 1 0; padding: 8px 0; font-size: 0.8rem; }
+
+            .timeline-container { padding: 6px; }
+            .timeline-table { display: none; }
+            .mobile-list { display: block; }
+
+            .legend { font-size: 0.6rem; }
+            .legend-color { width: 16px; height: 16px; }
+        }
+
         .legend-title { font-weight: bold; margin-bottom: 3px; }
         .legend-items { display: flex; gap: 10px; flex-wrap: wrap; }
         .legend-item { display: flex; align-items: center; gap: 5px; }
@@ -306,7 +468,7 @@
             width: 20px;
             height: 20px;
             border-radius: 4px;
-            border: 1px solid #ccc;
+            border: 1px solid var(--legend-border);
         }
 
         #loading {
@@ -319,8 +481,8 @@
             width: 2.5rem;
             height: 2.5rem;
             margin: 0 auto 1rem;
-            border: 4px solid rgba(26, 115, 232, 0.25);
-            border-top-color: #1a73e8;
+            border: 4px solid var(--spinner-track);
+            border-top-color: var(--spinner-head);
             border-radius: 50%;
             animation: spinner-rotate 0.8s linear infinite;
         }
@@ -331,9 +493,9 @@
 
         /* Įspėjimas, kai rodomi podėlyje išsaugoti (ne švieži) duomenys */
         .stale-notice {
-            background: #fff3e0;
-            border: 1px solid #ffb74d;
-            color: #8d4b00;
+            background: var(--notice-bg);
+            border: 1px solid var(--notice-border);
+            color: var(--notice-ink);
             padding: 8px 12px;
             border-radius: 10px;
             margin-bottom: 10px;
@@ -342,8 +504,8 @@
         }
 
         .error-msg {
-            background: #ffebee;
-            color: #c62828;
+            background: var(--error-bg);
+            color: var(--error-ink);
             padding: 20px;
             border-radius: 12px;
             text-align: center;
@@ -364,8 +526,8 @@
             background:
                 radial-gradient(ellipse at 18% 15%, rgba(255,255,255,0.12) 0%, transparent 50%),
                 radial-gradient(ellipse at 85% 85%, rgba(255,255,255,0.09) 0%, transparent 45%),
-                linear-gradient(135deg, #1a73e8 0%, #1557b0 55%, #0d3c7d 100%);
-            color: white;
+                linear-gradient(135deg, var(--nl-a) 0%, var(--nl-b) 55%, var(--nl-c) 100%);
+            color: var(--nl-ink);
             flex-direction: column;
             align-items: center;
             justify-content: center;
@@ -473,7 +635,7 @@
             width: 10px;
             height: 10px;
             border-radius: 50%;
-            background: #4ade80;
+            background: var(--nl-dot);
             animation: blink 1.4s infinite;
         }
     </style>
@@ -547,29 +709,30 @@
             </thead>
             <tbody id="timelineBody"></tbody>
         </table>
+        <div class="mobile-list" id="mobileList"></div>
     </div>
 
     <div class="legend">
         <div class="legend-title">Legenda:</div>
         <div class="legend-items">
             <div class="legend-item">
-                <div class="legend-color" style="background:#e8f5e9;border-color:#a5d6a7;"></div>
+                <div class="legend-color" style="background:var(--lesson-bg);border-color:var(--lesson-border);"></div>
                 <span>Pamoka vyksta</span>
             </div>
             <div class="legend-item">
-                <div class="legend-color" style="background:#fff9c4;border:2px solid #ffd600;"></div>
+                <div class="legend-color" style="background:var(--current-bg);border:1px solid var(--current-border);"></div>
                 <span>Dabartinė pamoka</span>
             </div>
             <div class="legend-item">
-                <div class="legend-color" style="background:#f5f5f5;"></div>
+                <div class="legend-color" style="background:var(--past-bg);"></div>
                 <span>Pamoka praėjo</span>
             </div>
             <div class="legend-item">
-                <div class="legend-color" style="background:#ffe0b2;border:2px solid #fb8c00;"></div>
+                <div class="legend-color" style="background:var(--changed-bg);border:1px solid var(--changed-border);box-shadow:inset 3px 0 0 var(--changed-accent);"></div>
                 <span>Keitimas</span>
             </div>
             <div class="legend-item">
-                <span style="color:#1a73e8;font-weight:700;font-size:1.1rem;">*</span>
+                <span style="color:var(--accent);font-weight:700;font-size:1.1rem;">*</span>
                 <span>Pamoka Molėtų baseine</span>
             </div>
         </div>
@@ -1416,6 +1579,66 @@ async function fetchData() {
         parseSchedule(lastScheduleRows, lastChangedKeys, evenWeek);
     }
 
+    // Telefone 8 pamokų × 16 klasių lentelė netelpa – rodomas tos dienos
+    // pamokų sąrašas pagal pamokas. Pasirinkus klasę, jis tampa asmeniniu
+    // tos klasės tvarkaraščiu.
+    function buildMobileList(currentPeriod) {
+        const list = document.getElementById('mobileList');
+        if (!window.matchMedia('(max-width: 640px)').matches) {
+            list.innerHTML = '';
+            return;
+        }
+
+        const isToday = selectedDay === new Date().getDay();
+        let html = '';
+        let total = 0;
+
+        for (let p = 1; p <= 8; p++) {
+            const time = PERIOD_TIMES[p] || { start: '', end: '' };
+            const lessons = [];
+            const seen = new Set();
+
+            VALID_CLASSES.forEach(cls => {
+                const dayLessons = scheduleByClass[cls]?.[selectedDay] || [];
+                dayLessons.filter(l => l.period === p).forEach(l => {
+                    if (applyFilters([l]).length === 0) return;
+                    // Legendos įrašai (pvz., konsultacija) būna nukopijuoti
+                    // kiekvienai klasei – sąraše rodome vieną kartą.
+                    const key = l.isLegend
+                        ? `${l.period}|${l.subject}|${l.teacher}|${l.room}`
+                        : `${l.period}|${l.class}|${l.subject}|${l.teacher}|${l.room}`;
+                    if (seen.has(key)) return;
+                    seen.add(key);
+                    lessons.push(l);
+                });
+            });
+
+            if (lessons.length === 0) continue;
+
+            lessons.sort((a, b) => {
+                if (a.isLegend !== b.isLegend) return a.isLegend ? 1 : -1;
+                return a.class.localeCompare(b.class);
+            });
+
+            total += lessons.length;
+            const isCurrent = isToday && currentPeriod === p;
+            html += `<div class="ml-period">${p}. <span class="ml-time">${time.start}–${time.end}</span>${isCurrent ? '<span class="ml-now">dabar</span>' : ''}</div>`;
+
+            lessons.forEach(l => {
+                const classes = ['ml-lesson'];
+                if (l.changed) classes.push('is-changed');
+                if (isCurrent) classes.push('is-current');
+                const chip = l.isLegend ? '' : `<span class="ml-class">${escapeHtml(l.class.toUpperCase())}</span>`;
+                const room = l.room ? ` · Kab.${escapeHtml(l.room)}` : '';
+                const split = l.splitSuffix ? ` · ${escapeHtml(l.splitSuffix)}` : '';
+                const pool = l.isPool ? ' · baseinas' : '';
+                html += `<div class="${classes.join(' ')}">${chip}<div class="ml-content"><div class="ml-subject">${escapeHtml(l.subject)}</div><div class="ml-meta">${escapeHtml(abbreviateName(l.teacher))}${room}${split}${pool}</div></div></div>`;
+            });
+        }
+
+        list.innerHTML = total > 0 ? html : '<div class="ml-empty">Šiai dienai pamokų nėra.</div>';
+    }
+
     function renderTimeline() {
         ensureParityMatches();
         const table = document.getElementById('timelineTable');
@@ -1515,7 +1738,7 @@ async function fetchData() {
                                 ? `<span class="split-badge">${escapeHtml(lesson.splitSuffix)}</span>`
                                 : '';
                             const poolStar = lesson.isPool
-                                ? `<span style="color:#1a73e8;font-size:0.7rem;font-weight:700;" title="Pamoka Molėtų baseine">*</span>`
+                                ? `<span style="color:var(--accent);font-size:0.7rem;font-weight:700;" title="Pamoka Molėtų baseine">*</span>`
                                 : '';
                             if (lesson.isLegend) {
                                 const rBadge = lesson.room
@@ -1528,7 +1751,7 @@ async function fetchData() {
 
                         cellContent += `<div class="lesson-info" style="line-height:1.2;">
                             <div style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"><span class="lesson-class" style="display:inline;font-size:0.7rem;">${indicator}${displaySubject}</span></div>
-                            <div style="color:#555;font-size:0.6rem;">${lessonLines.join(' · ')}</div>
+                            <div style="color:var(--teacher-ink);font-size:0.6rem;">${lessonLines.join(' · ')}</div>
                         </div>`;
                     });
                 } else if (isCurrentBreak && !Object.values(activeFilters).some(v => v)) {
@@ -1558,6 +1781,8 @@ async function fetchData() {
                 }
             }
         }
+
+        buildMobileList(currentPeriod);
     }
 
     function updateHeaderDay() {
@@ -1605,7 +1830,7 @@ async function fetchData() {
                     const secs = remaining % 60;
                     labelEl.textContent = `${p}. pamoka`;
                     timeEl.textContent = `-${mins}:${String(secs).padStart(2, '0')}`;
-                    timeEl.style.color = '#fff';
+                    timeEl.dataset.state = 'lesson';
                     return;
                 }
             }
@@ -1623,7 +1848,7 @@ async function fetchData() {
                     const nextPeriod = p + 1;
                     labelEl.textContent = `☕ Pertrauka (${nextPeriod}. pamoka)`;
                     timeEl.textContent = `${mins}:${String(secs).padStart(2, '0')}`;
-                    timeEl.style.color = '#ffd600';
+                    timeEl.dataset.state = 'break';
                     return;
                 }
             }
@@ -1631,7 +1856,7 @@ async function fetchData() {
 
         labelEl.textContent = 'Pamokos nevyksta';
         timeEl.textContent = '--:--';
-        timeEl.style.color = '#aaa';
+        timeEl.dataset.state = 'off';
     }
 
     function updateClock() {
@@ -1772,6 +1997,13 @@ async function fetchData() {
 
         updateClock();
         setInterval(updateClock, 1000);
+
+        // Pasukus telefoną ar pakeitus lango plotį, perpiešiamas vaizdas
+        let resizeTimer;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(renderTimeline, 150);
+        });
 
         setInterval(() => {
             renderTimeline();

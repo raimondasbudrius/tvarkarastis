@@ -1,12 +1,13 @@
 # tvarkarastis
 Molėtų progimnazijos pamokų tvarkaraštis
 
-## Keitimų paryškinimas (geltoni langeliai → oranžinis paryškinimas)
+## Keitimų paryškinimas (geltoni langeliai → ramus paryškinimas)
 
 Programa nuskaito langelių **fonines spalvas** iš Google Sheets lentelės per
 Google Sheets API v4. Originalioje lentelėje geltonu fonu pažymėtos pamokos
-(keitimai) tvarkaraštyje parodomos oranžiniu paryškinimu, o legenda paaiškina
-spalvą („Keitimas“).
+(keitimai) tvarkaraštyje parodomos švelniu šiltu fonu ir plona ruda juosta
+kairėje, o legenda paaiškina ženklą („Keitimas“) – taip keitimai matosi, bet
+neperima viso ekrano dėmesio.
 
 CSV/gviz endpoint'ai spalvų negrąžina, todėl reikalingas nemokamas API raktas:
 
@@ -21,6 +22,13 @@ Pastabos:
 - „Publish to web“ (2PACX) ID spalvų nuskaitymo nepalaiko.
 - Geltonos spalvos aptikimas atpažįsta visus Google Sheets paletės geltonus
   atspalvius (#ffff00, #fff2cc, #ffe599, #ffd966, #f1c232 ir pan.).
+
+## Telefone
+
+Ekrane, siauresniame nei 640 px, vietoje didelės lentelės rodomas **tos dienos
+pamokų sąrašas**: kiekviena pamoka atskirai su laiku, klase, dalyku, mokytoju
+ir kabinetu. Filtrai veikia taip pat, o pasirinkus klasę sąrašas tampa tos
+klasės tvarkaraščiu. Keitimai žymimi taip pat kaip lentelėje.
 
 ## Savaitės tipas ir darbas be interneto
 

@@ -48,7 +48,7 @@
             --changed-bg: #f0e4d0;
             --changed-accent: #b5762f;
             --changed-border: #e0cfb4;
-            --subject-ink: #2e7d32;
+            --subject-ink: #2b7430;
             --teacher-ink: #555555;
             --badge-split-bg: #ff9800;
             --badge-split-ink: #ffffff;
@@ -82,12 +82,12 @@
             --nl-dot: #4ade80;
             --countdown-break: #ffd600;
             --countdown-off: #aaaaaa;
-            --accent-ink: #1a73e8;
+            --accent-ink: #1967d2;
             --muted-ink: #666666;
-            --faint-ink: #999999;
             --now-ink: #8a6a12;
             --legend-bg: #f8f9fa;
             --empty-ink: #cccccc;
+            --status-bar: #1a73e8;
         }
 
         /* ===== Tamsi tema =====
@@ -124,8 +124,6 @@
             --subject-ink: #7fd18a;
             --teacher-ink: #a9b4c0;
             --badge-split-bg: #c77700;
-            --badge-split-ink: #ffffff;
-            --dot: #ffd600;
             --day-bg: #1a222a;
             --day-border: #2f4f77;
             --day-ink: #8ab4f8;
@@ -139,7 +137,6 @@
             --active-bg: #1b2c42;
             --clear-bg: #c0392f;
             --clear-hover: #a93226;
-            --clear-ink: #ffffff;
             --legend-border: #39434d;
             --spinner-track: rgba(138, 180, 248, 0.25);
             --spinner-head: #8ab4f8;
@@ -152,14 +149,12 @@
             --nl-b: #0c2033;
             --nl-c: #071526;
             --nl-ink: #eef3fa;
-            --nl-dot: #4ade80;
-            --countdown-break: #ffd600;
             --countdown-off: #7d8791;
             --muted-ink: #9aa6b2;
-            --faint-ink: #77828d;
             --now-ink: #f2cf7a;
             --legend-bg: #1b232b;
             --empty-ink: #6f7a85;
+            --status-bar: #0f1419;
         }
 
         * { box-sizing: border-box; }
@@ -322,7 +317,7 @@
 
         .period-header .period-num { font-size: 0.8rem; color: var(--accent-ink); }
         .period-header .period-time { font-size: 0.55rem; color: var(--muted-ink); }
-        .period-header .period-break { font-size: 0.5rem; color: var(--faint-ink); }
+        .period-header .period-break { font-size: 0.5rem; color: var(--muted-ink); }
 
         .class-row td:first-child {
             background: var(--panel-row);
@@ -540,7 +535,7 @@
         .ml-meta { font-size: 0.68rem; color: var(--teacher-ink); }
         .ml-empty {
             text-align: center;
-            color: var(--faint-ink);
+            color: var(--muted-ink);
             padding: 24px 8px;
             font-size: 0.8rem;
         }
@@ -2147,8 +2142,9 @@ async function fetchData() {
     }
 
     // ===== Tema (šviesi / tamsi) =====
+    // Spalvos imamos iš CSS kintamųjų (--status-bar), kad tos pačios
+    // reikšmės nebūtų kartojamos ir čia.
     const THEME_KEY = 'tvarkarastis:tema';
-    const THEME_COLOR = { light: '#1a73e8', dark: '#0f1419' };
 
     function readTheme() {
         try {
@@ -2176,7 +2172,9 @@ async function fetchData() {
 
         // Telefono būsenos juosta nusidažo pagal pasirinktą temą.
         const meta = document.querySelector('meta[name="theme-color"]');
-        if (meta) meta.setAttribute('content', dark ? THEME_COLOR.dark : THEME_COLOR.light);
+        const statusBar = getComputedStyle(document.documentElement)
+            .getPropertyValue('--status-bar').trim();
+        if (meta && statusBar) meta.setAttribute('content', statusBar);
     }
 
     function toggleTheme() {

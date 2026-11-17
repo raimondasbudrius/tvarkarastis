@@ -407,15 +407,16 @@
         .period-header.is-event .period-break { font-size: 0.5rem; color: var(--override-ink); opacity: 0.85; }
 
         .lesson-cell.is-event .event-title {
-            font-size: 0.7rem;
+            font-size: 0.62rem;
+            line-height: 1.15;
             font-weight: 700;
             color: var(--override-ink);
+            overflow-wrap: anywhere;
         }
         .lesson-cell.is-event .event-time {
-            font-size: 0.6rem;
+            font-size: 0.55rem;
             color: var(--override-ink);
             opacity: 0.85;
-            white-space: nowrap;
         }
 
         @keyframes pulse-current {
@@ -1970,7 +1971,7 @@ async function fetchData() {
         const times = periodTimesFor(displayDate);
         const event = override && override.events && override.events[0];
         const lastPeriod = times.length - 1; // laikino tvarkaraščio dieną pamokų gali būti mažiau
-        const eventColspan = Math.max(1, 8 - lastPeriod);
+        const eventColspan = 1; // renginys užima tik vieno pamokos langelio plotį
         updateOverrideNotice(override, displayDate);
 
         let headerHTML = '<tr><th class="period-header">Klasė</th>';

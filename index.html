@@ -6,6 +6,15 @@
     <title>🏫 Pamokų Tvarkaraštis</title>
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#1a73e8">
+    <script>
+        // Tamsi tema pritaikoma dar prieš nusidažant puslapiui, kad tiems,
+        // kas ją pasirinko, neblykstelėtų šviesus fonas.
+        try {
+            if (localStorage.getItem('tvarkarastis:tema') === 'dark') {
+                document.documentElement.dataset.theme = 'dark';
+            }
+        } catch (e) { /* saugykla uždrausta – lieka šviesi tema */ }
+    </script>
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -73,11 +82,90 @@
             --nl-dot: #4ade80;
             --countdown-break: #ffd600;
             --countdown-off: #aaaaaa;
+            --accent-ink: #1a73e8;
+            --muted-ink: #666666;
+            --faint-ink: #999999;
+            --now-ink: #8a6a12;
+            --legend-bg: #f8f9fa;
+            --empty-ink: #cccccc;
+        }
+
+        /* ===== Tamsi tema =====
+           Perrašomi tie patys kintamieji, todėl visa lentelė, telefonų
+           sąrašas, legenda ir pranešimai persidažo be papildomų taisyklių.
+           Geltoni „keitimo“ ir „dabar“ ženklai išlieka šilti, tik tamsūs. */
+        [data-theme="dark"] {
+            --page-bg: #0f1419;
+            --ink: #e7eaee;
+            --header-a: #16324f;
+            --header-b: #0c2033;
+            --header-ink: #eef3fa;
+            --panel-bg: #161c22;
+            --panel-soft: #161c22;
+            --panel-alt: #1b232b;
+            --panel-row: #1d262f;
+            --border: #2a343d;
+            --border-strong: #333f4a;
+            --accent: #2a63c0;
+            --accent-ink: #8ab4f8;
+            --lesson-bg: #13261b;
+            --lesson-border: #2c5738;
+            --current-bg: #2b2610;
+            --current-border: #d7b53a;
+            --current-glow: rgba(255, 214, 0, 0.12);
+            --current-glow-2: rgba(255, 214, 0, 0.22);
+            --past-bg: #141a1f;
+            --future-bg: #12171c;
+            --break-bg: #11212f;
+            --break-border: #2f5d80;
+            --changed-bg: #2a2118;
+            --changed-accent: #d69a56;
+            --changed-border: #4a3a28;
+            --subject-ink: #7fd18a;
+            --teacher-ink: #a9b4c0;
+            --badge-split-bg: #c77700;
+            --badge-split-ink: #ffffff;
+            --dot: #ffd600;
+            --day-bg: #1a222a;
+            --day-border: #2f4f77;
+            --day-ink: #8ab4f8;
+            --day-hover: #223243;
+            --today-border: #3fa860;
+            --today-ink: #6ed08b;
+            --today-active-bg: #2e7d4a;
+            --select-bg: #1a222a;
+            --select-border: #39434d;
+            --active-border: #8ab4f8;
+            --active-bg: #1b2c42;
+            --clear-bg: #c0392f;
+            --clear-hover: #a93226;
+            --clear-ink: #ffffff;
+            --legend-border: #39434d;
+            --spinner-track: rgba(138, 180, 248, 0.25);
+            --spinner-head: #8ab4f8;
+            --notice-bg: #2a2113;
+            --notice-border: #a5772b;
+            --notice-ink: #f0c07a;
+            --error-bg: #2a1416;
+            --error-ink: #ff9b9b;
+            --nl-a: #16324f;
+            --nl-b: #0c2033;
+            --nl-c: #071526;
+            --nl-ink: #eef3fa;
+            --nl-dot: #4ade80;
+            --countdown-break: #ffd600;
+            --countdown-off: #7d8791;
+            --muted-ink: #9aa6b2;
+            --faint-ink: #77828d;
+            --now-ink: #f2cf7a;
+            --legend-bg: #1b232b;
+            --empty-ink: #6f7a85;
         }
 
         * { box-sizing: border-box; }
         body {
             background-color: var(--page-bg);
+            color: var(--ink);
             font-family: 'Lexend', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             font-weight: 600;
             padding: 10px;
@@ -98,6 +186,25 @@
         .header-bar h2 { margin: 0; font-size: 1.2rem; }
         .current-time { font-size: 1.1rem; font-weight: bold; }
 
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .theme-toggle {
+            background: rgba(255, 255, 255, 0.16);
+            color: var(--header-ink);
+            border: 1px solid rgba(255, 255, 255, 0.35);
+            border-radius: 8px;
+            padding: 6px 9px;
+            font-size: 0.9rem;
+            line-height: 1;
+            cursor: pointer;
+            flex: 0 0 auto;
+        }
+        .theme-toggle:hover { background: rgba(255, 255, 255, 0.28); }
+
         #countdownTime[data-state="break"] { color: var(--countdown-break); }
         #countdownTime[data-state="off"] { color: var(--countdown-off); }
 
@@ -113,7 +220,7 @@
             align-items: center;
         }
 
-        .filter-bar label { font-size: 0.75rem; font-weight: 600; color: #555; margin-right: 2px; }
+        .filter-bar label { font-size: 0.75rem; font-weight: 600; color: var(--muted-ink); margin-right: 2px; }
         .filter-bar select {
             font-size: 0.75rem;
             padding: 3px 6px;
@@ -213,15 +320,15 @@
             min-width: 55px;
         }
 
-        .period-header .period-num { font-size: 0.8rem; color: var(--accent); }
-        .period-header .period-time { font-size: 0.55rem; color: #666; }
-        .period-header .period-break { font-size: 0.5rem; color: #999; }
+        .period-header .period-num { font-size: 0.8rem; color: var(--accent-ink); }
+        .period-header .period-time { font-size: 0.55rem; color: var(--muted-ink); }
+        .period-header .period-break { font-size: 0.5rem; color: var(--faint-ink); }
 
         .class-row td:first-child {
             background: var(--panel-row);
             font-weight: bold;
             font-size: 0.75rem;
-            color: var(--accent);
+            color: var(--accent-ink);
             width: 42px;
             min-width: 42px;
             max-width: 42px;
@@ -255,7 +362,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            color: var(--accent);
+            color: var(--accent-ink);
             font-size: 0.65rem;
             font-weight: bold;
         }
@@ -347,7 +454,7 @@
         }
 
         .no-lesson {
-            color: #ccc;
+            color: var(--empty-ink);
             font-size: 0.6rem;
         }
 
@@ -370,7 +477,7 @@
         .legend {
             margin-top: 8px;
             padding: 6px 10px;
-            background: #f8f9fa;
+            background: var(--legend-bg);
             border-radius: 8px;
             font-size: 0.65rem;
         }
@@ -385,14 +492,14 @@
             margin: 10px 2px 4px;
             font-size: 0.8rem;
             font-weight: 700;
-            color: var(--accent);
+            color: var(--accent-ink);
         }
         .ml-period:first-child { margin-top: 2px; }
-        .ml-period .ml-time { font-size: 0.68rem; font-weight: 600; color: #666; }
+        .ml-period .ml-time { font-size: 0.68rem; font-weight: 600; color: var(--muted-ink); }
         .ml-period .ml-now {
             font-size: 0.6rem;
             font-weight: 700;
-            color: #8a6a12;
+            color: var(--now-ink);
             background: var(--current-bg);
             border: 1px solid var(--current-border);
             border-radius: 999px;
@@ -433,7 +540,7 @@
         .ml-meta { font-size: 0.68rem; color: var(--teacher-ink); }
         .ml-empty {
             text-align: center;
-            color: #888;
+            color: var(--faint-ink);
             padding: 24px 8px;
             font-size: 0.8rem;
         }
@@ -451,11 +558,45 @@
             #weekType { font-size: 0.7rem !important; }
             #countdown { font-size: 0.8rem !important; }
             .current-time { font-size: 0.95rem; }
+            .header-right { gap: 8px; }
+            .theme-toggle { padding: 7px 8px; font-size: 0.95rem; }
 
-            .filter-bar { gap: 6px; padding: 8px 10px; }
+            /* Filtrai sutelpti į dvi eilutes: mokytojas + dalykas + ✕ viršuje,
+               kabinetas + klasė apačioje. Taip tvarkaraštis prasideda aukščiau. */
+            .filter-bar {
+                display: grid;
+                grid-template-columns: 1fr 1fr auto;
+                gap: 4px 6px;
+                padding: 6px 8px;
+                margin-bottom: 8px;
+                align-items: center;
+            }
             .filter-bar > label { display: none; }
-            .filter-bar select { flex: 1 1 45%; max-width: none; font-size: 0.8rem; padding: 6px 8px; }
-            .clear-filters-btn { flex: 0 0 auto; padding: 6px 10px; }
+            .filter-bar select {
+                width: 100%;
+                min-width: 0;
+                max-width: none;
+                font-size: 0.75rem;
+                padding: 4px 6px;
+            }
+            .clear-filters-btn {
+                grid-row: 1;
+                grid-column: 3;
+                min-width: 36px;
+                min-height: 30px;
+                padding: 4px 7px;
+                font-size: 0.8rem;
+                line-height: 1;
+                white-space: nowrap;
+            }
+            .clear-filters-btn .clear-label { display: none; }
+            .filter-count {
+                grid-row: 2;
+                grid-column: 3;
+                margin-left: 0;
+                font-size: 0.65rem;
+                text-align: center;
+            }
 
             .day-selector { gap: 4px; }
             .day-btn { flex: 1 1 0; padding: 8px 0; font-size: 0.8rem; }
@@ -520,7 +661,7 @@
 
         .filter-count {
             font-size: 0.65rem;
-            color: #666;
+            color: var(--muted-ink);
             margin-left: 5px;
         }
 
@@ -659,7 +800,10 @@
         <div id="countdownLabel" style="font-size:0.75rem;opacity:0.8;">Pamoka</div>
         <div id="countdownTime" style="font-weight:bold;">--:--</div>
     </div>
-    <div class="current-time" id="clock">--:--:--</div>
+    <div class="header-right">
+        <div class="current-time" id="clock">--:--:--</div>
+        <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" aria-label="Įjungti tamsią temą" title="Įjungti tamsią temą">🌙</button>
+    </div>
 </div>
 
 <div id="loading">
@@ -701,7 +845,7 @@
         <select id="filterClass">
             <option value="">Visos klasės</option>
         </select>
-        <button class="clear-filters-btn" onclick="clearFilters()">✕ Išvalyti</button>
+        <button class="clear-filters-btn" onclick="clearFilters()" aria-label="Išvalyti filtrus" title="Išvalyti filtrus">✕<span class="clear-label"> Išvalyti</span></button>
         <span class="filter-count" id="filterCount"></span>
     </div>
 
@@ -1485,8 +1629,53 @@ async function fetchData() {
         });
     }
 
+    // Paskutinė pasirinkta klasė įsimenama šiame įrenginyje, kad telefone
+    // tvarkaraštis atsidarytų kaip to mokinio tvarkaraštis.
+    const SAVED_CLASS_KEY = 'tvarkarastis:pasirinkta-klase';
+    let savedClassApplied = false;
+
+    function saveSelectedClass(value) {
+        try {
+            if (value) {
+                localStorage.setItem(SAVED_CLASS_KEY, value);
+            } else {
+                localStorage.removeItem(SAVED_CLASS_KEY);
+            }
+        } catch (e) {
+            // Naršyklė uždraudusi saugyklą – tiesiog nepamename pasirinkimo.
+        }
+    }
+
+    function readSelectedClass() {
+        try {
+            return localStorage.getItem(SAVED_CLASS_KEY) || '';
+        } catch (e) {
+            return '';
+        }
+    }
+
+    // Įsimintą klasę pritaikome tik telefone ir tik kartą per atidarymą, kad
+    // kompiuteryje lentelė ir toliau rodytų visas klases, o išvalius filtrus
+    // jis neliktų vėl įjungiamas.
+    function applySavedClassOnPhone() {
+        if (savedClassApplied) return;
+        savedClassApplied = true;
+        if (!window.matchMedia('(max-width: 640px)').matches) return;
+
+        const saved = readSelectedClass();
+        if (!saved) return;
+
+        const classSelect = document.getElementById('filterClass');
+        if (![...classSelect.options].some(o => o.value === saved)) return;
+
+        classSelect.value = saved;
+        activeFilters.class = saved;
+        updateFilterStyles();
+    }
+
     // Clear filters
     function clearFilters() {
+        saveSelectedClass('');
         activeFilters = { teacher: '', subject: '', room: '', class: '' };
         document.getElementById('filterTeacher').value = '';
         document.getElementById('filterSubject').value = '';
@@ -1507,7 +1696,10 @@ async function fetchData() {
         });
 
         const count = Object.values(activeFilters).filter(v => v).length;
-        document.getElementById('filterCount').textContent = count > 0 ? `${count} filtrai` : '';
+        // Lietuviškai: 1 filtras, 2–4 filtrai. Daugiau kaip keturi filtrai
+        // negali būti, todėl paprastos dvi formos pakanka.
+        document.getElementById('filterCount').textContent =
+            count > 0 ? `${count} ${count === 1 ? 'filtras' : 'filtrai'}` : '';
     }
 
     // Setup filter event listeners
@@ -1516,6 +1708,7 @@ async function fetchData() {
             document.getElementById(id).addEventListener('change', function() {
                 const key = id.replace('filter', '').toLowerCase();
                 activeFilters[key] = this.value;
+                if (key === 'class') saveSelectedClass(this.value);
                 updateFilterStyles();
                 renderTimeline();
             });
@@ -1953,7 +2146,53 @@ async function fetchData() {
         console.error(err);
     }
 
+    // ===== Tema (šviesi / tamsi) =====
+    const THEME_KEY = 'tvarkarastis:tema';
+    const THEME_COLOR = { light: '#1a73e8', dark: '#0f1419' };
+
+    function readTheme() {
+        try {
+            return localStorage.getItem(THEME_KEY) === 'dark' ? 'dark' : 'light';
+        } catch (e) {
+            return 'light';
+        }
+    }
+
+    function applyTheme(theme) {
+        const dark = theme === 'dark';
+        if (dark) {
+            document.documentElement.dataset.theme = 'dark';
+        } else {
+            delete document.documentElement.dataset.theme;
+        }
+
+        const btn = document.getElementById('themeToggle');
+        if (btn) {
+            const label = dark ? 'Įjungti šviesią temą' : 'Įjungti tamsią temą';
+            btn.textContent = dark ? '☀️' : '🌙';
+            btn.setAttribute('aria-label', label);
+            btn.title = label;
+        }
+
+        // Telefono būsenos juosta nusidažo pagal pasirinktą temą.
+        const meta = document.querySelector('meta[name="theme-color"]');
+        if (meta) meta.setAttribute('content', dark ? THEME_COLOR.dark : THEME_COLOR.light);
+    }
+
+    function toggleTheme() {
+        const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+        applyTheme(next);
+        try {
+            localStorage.setItem(THEME_KEY, next);
+        } catch (e) {
+            // Nepamename pasirinkimo, bet tema veikia iki perkrovimo.
+        }
+    }
+
     async function init() {
+        // Tema – prieš pirmą atvaizdavimą, kad neblykstelėtų fonas.
+        applyTheme(readTheme());
+
         // Pasirinktą dieną nustatome prieš analizuojant duomenis – nuo jos
         // priklauso, kuriam savaitės tipui (lyginei/nelyginei) juos paruošti.
         const now = new Date();
@@ -1992,6 +2231,9 @@ async function fetchData() {
                 return;
             }
         }
+
+        // Telefone įsiminta klasė pritaikoma prieš pirmą atvaizdavimą.
+        applySavedClassOnPhone();
 
         buildDaySelector();
         setupFilters();

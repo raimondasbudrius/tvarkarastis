@@ -23,12 +23,50 @@ Pastabos:
 - Geltonos spalvos aptikimas atpažįsta visus Google Sheets paletės geltonus
   atspalvius (#ffff00, #fff2cc, #ffe599, #ffd966, #f1c232 ir pan.).
 
+## Įdiegimas telefone ir darbas be interneto
+
+Tvarkaraštį galima įsidiegti kaip programėlę (veikia per https arba localhost;
+atidarius `index.html` tiesiogiai iš disko – ne):
+
+- **Android (Chrome):** meniu ⋮ → „Įdiegti programėlę“ arba
+  „Pridėti prie pagrindinio ekrano“.
+- **iPhone / iPad (Safari):** bendrinimo mygtukas → „Pridėti prie pagrindinio ekrano“.
+
+Tam skirti failai: [`manifest.json`](manifest.json),
+[`service-worker.js`](service-worker.js) ir aplankas [`icons/`](icons/).
+Po pirmo apsilankymo service worker išsaugo puslapį, piktogramas ir manifestą,
+todėl be interneto puslapis vis tiek atsidaro ir rodo paskutinius sėkmingai
+nuskaitytus duomenis su įspėjimu „Rodomi paskutiniai išsaugoti duomenys“.
+
+Pakeitus piktogramas ar kitus programėlės failus, `service-worker.js` faile
+padidinkite `CACHE_NAME` versiją (pvz., `tvarkarastis-v2`), kad telefonai
+gautų naują kopiją.
+
 ## Telefone
 
 Ekrane, siauresniame nei 640 px, vietoje didelės lentelės rodomas **tos dienos
 pamokų sąrašas**: kiekviena pamoka atskirai su laiku, klase, dalyku, mokytoju
 ir kabinetu. Filtrai veikia taip pat, o pasirinkus klasę sąrašas tampa tos
 klasės tvarkaraščiu. Keitimai žymimi taip pat kaip lentelėje.
+
+Filtrų juosta telefone sutelpta į dvi eilutes (mokytojas, dalykas ir ✕ viršuje,
+kabinetas ir klasė apačioje), todėl tvarkaraštis prasideda aukščiau.
+
+Pasirinkta klasė įsimenama tame įrenginyje, tad kitą kartą atidarius puslapį
+telefone iš karto rodomas **tos klasės** tvarkaraštis. Kompiuteryje visada
+rodomos visos klasės. Paspaudus „✕“ filtras išvalomas ir įsiminimas
+pamirštamas.
+
+## Tema (šviesi / tamsi)
+
+Viršuje dešinėje esantis ☀️/🌙 mygtukas persijungia tarp šviesios ir tamsios
+temos. Pasirinkimas įsimenamas tame įrenginyje, o tamsi tema pritaikoma dar
+prieš nusidažant puslapiui, todėl neblyksteli šviesus fonas. Telefono būsenos
+juostos spalva taip pat prisitaiko.
+
+Visos spalvos laikomos CSS kintamuosiuose: šviesi – `:root`, tamsi –
+`[data-theme="dark"]`. Naują temą užtenka pridėti kaip dar vieną tokių
+kintamųjų rinkinį.
 
 ## Savaitės tipas ir darbas be interneto
 

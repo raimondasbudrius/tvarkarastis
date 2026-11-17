@@ -86,6 +86,15 @@ kintamųjų rinkinį.
   faile, todėl tvarkaraštis atsidaro ir be interneto (jei duomenys jau buvo
   nuskaityti anksčiau).
 
+## Laikini vienos dienos pakeitimai
+
+Jei vienai dienai pakeičiami pamokų laikai (pvz., lapkričio 18 d. pamokos
+trumpos, o po 6 pamokų vyksta „Trišaliai pokalbiai“), jie įrašomi `index.html`
+failo `DATE_OVERRIDES` objekte pagal datą (`YYYY-MM-DD`). Tokią dieną lentelėje
+ir telefonų sąraše rodomi tos dienos laikai, o po paskutinės pamokos – renginys
+(likusius lentelės stulpelius užima jo laikas). Visos kitos dienos lieka
+įprastos, todėl praėjus dienai įrašą užtenka ištrinti.
+
 ## Technologijų pamokų medžiaga (micro:bit)
 
 ### `pamokos/7-1/` – 7 klasė · 1 ciklas „Nematoma arfa“ (2 pamokos)

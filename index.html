@@ -88,6 +88,9 @@
             --legend-bg: #f8f9fa;
             --empty-ink: #cccccc;
             --status-bar: #1a73e8;
+            --override-bg: #f3e8fd;
+            --override-border: #b39ddb;
+            --override-ink: #4b2a75;
         }
 
         /* ===== Tamsi tema =====
@@ -155,6 +158,9 @@
             --legend-bg: #1b232b;
             --empty-ink: #6f7a85;
             --status-bar: #0f1419;
+            --override-bg: #241a33;
+            --override-border: #6b4d94;
+            --override-ink: #d6c2f0;
         }
 
         * { box-sizing: border-box; }
@@ -388,6 +394,30 @@
             animation: none;
         }
 
+        /* Laikinai pakeisto tvarkaraščio diena: pamokų laikai kiti, o po
+           paskutinės pamokos vyksta renginys – jis užima likusius stulpelius. */
+        .period-header.is-event,
+        .lesson-cell.is-event {
+            background: var(--override-bg);
+            border-color: var(--override-border);
+            color: var(--override-ink);
+        }
+
+        .period-header.is-event .period-time { font-size: 0.55rem; color: var(--override-ink); }
+        .period-header.is-event .period-break { font-size: 0.5rem; color: var(--override-ink); opacity: 0.85; }
+
+        .lesson-cell.is-event .event-title {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: var(--override-ink);
+        }
+        .lesson-cell.is-event .event-time {
+            font-size: 0.6rem;
+            color: var(--override-ink);
+            opacity: 0.85;
+            white-space: nowrap;
+        }
+
         @keyframes pulse-current {
             0%, 100% { box-shadow: inset 0 0 10px var(--current-glow); }
             50% { box-shadow: inset 0 0 18px var(--current-glow-2); }
@@ -519,6 +549,16 @@
             background: var(--current-bg);
             border-color: var(--current-border);
         }
+        .ml-event {
+            background: var(--override-bg);
+            border: 1px solid var(--override-border);
+            color: var(--override-ink);
+            border-radius: 8px;
+            padding: 6px 8px;
+            margin-bottom: 4px;
+            font-size: 0.78rem;
+            font-weight: 700;
+        }
         .ml-class {
             flex: 0 0 auto;
             min-width: 30px;
@@ -632,6 +672,18 @@
 
         @keyframes spinner-rotate {
             to { transform: rotate(360deg); }
+        }
+
+        /* Laikino (vienos dienos) tvarkaraščio pranešimas */
+        .override-notice {
+            background: var(--override-bg);
+            border: 1px solid var(--override-border);
+            color: var(--override-ink);
+            padding: 8px 12px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            font-size: 0.75rem;
+            text-align: center;
         }
 
         /* Įspėjimas, kai rodomi podėlyje išsaugoti (ne švieži) duomenys */
@@ -846,6 +898,8 @@
 
     <div class="day-selector" id="daySelector"></div>
 
+    <div id="overrideNotice" class="override-notice" style="display:none;"></div>
+
     <div class="timeline-container">
         <table class="timeline-table" id="timelineTable">
             <thead>
@@ -919,6 +973,66 @@
         { start: "13:50", end: "14:35", breakAfter: "5" },
         { start: "14:40", end: "15:25", breakAfter: "" }
     ];
+
+    // ===== Laikini vienos dienos tvarkaraščio pakeitimai =====
+    // Kai vienai dienai pakeičiami pamokų laikai, jie įrašomi čia pagal datą
+    // (YYYY-MM-DD). Kitos dienos lieka įprastos, o praėjus dienai įrašą galima
+    // ištrinti – tvarkaraštis vėl bus kaip anksčiau.
+    //   periods – tos dienos pamokų laikai (1..n)
+    //   events  – renginiai, vykstantys po nurodytos pamokos
+    const DATE_OVERRIDES = {
+        '2026-11-18': {
+            note: 'sutrumpintos pamokos',
+            periods: [
+                null, // 0-index placeholder
+                { start: '8:00', end: '8:25', breakAfter: '5' },
+                { start: '8:30', end: '8:55', breakAfter: '5' },
+                { start: '9:00', end: '9:25', breakAfter: '20' },
+                { start: '9:45', end: '10:10', breakAfter: '20' },
+                { start: '10:30', end: '10:55', breakAfter: '25' },
+                { start: '11:20', end: '11:45', breakAfter: '' }
+            ],
+            events: [
+                { afterPeriod: 6, title: 'Trišaliai pokalbiai', start: '12:00', end: '18:30' }
+            ]
+        }
+    };
+
+    // Data raktui „YYYY-MM-DD“ (pagal vietinę datą, ne UTC).
+    function dateKey(date) {
+        const pad = n => String(n).padStart(2, '0');
+        return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+    }
+
+    // Tos dienos laikinas pakeitimas (jei yra).
+    function dateOverride(date) {
+        return DATE_OVERRIDES[dateKey(date)] || null;
+    }
+
+    // Pamokų laikai konkrečiai dienai: laikini, jei diena įrašyta, kitu atveju įprasti.
+    function periodTimesFor(date) {
+        const override = dateOverride(date);
+        return (override && override.periods) || PERIOD_TIMES;
+    }
+
+    // Mokymosi dienos pabaiga konkrečiai dienai – įskaitant renginį po pamokų.
+    function schoolEndTimeFor(date) {
+        const override = dateOverride(date);
+        if (!override) return SCHOOL_END_TIME;
+
+        let end = 0;
+        (override.periods || []).forEach(time => {
+            if (!time) return;
+            const [h, m] = time.end.split(':').map(Number);
+            end = Math.max(end, h * 60 + m);
+        });
+        (override.events || []).forEach(event => {
+            if (!event.end) return;
+            const [h, m] = event.end.split(':').map(Number);
+            end = Math.max(end, h * 60 + m);
+        });
+        return end || SCHOOL_END_TIME;
+    }
 
     const DAY_NAMES = ['', 'Pirmadienis', 'Antradienis', 'Trečiadienis', 'Ketvirtadienis', 'Penktadienis', 'Šeštadienis', 'Sekmadienis'];
     const DAY_NAMES_SHORT = ['Sek', 'Pr', 'An', 'Tr', 'Kt', 'Pn', 'Št'];
@@ -1278,7 +1392,7 @@ async function fetchData() {
         const weekStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
         weekStart.setDate(weekStart.getDate() - ((today + 6) % 7)); // pirmadienis
 
-        const afterSchool = now.getHours() * 60 + now.getMinutes() >= SCHOOL_END_TIME;
+        const afterSchool = now.getHours() * 60 + now.getMinutes() >= schoolEndTimeFor(now);
         const useNextWeek = today === 5 ? afterSchool : (today === 6 || today === 0);
         if (useNextWeek) weekStart.setDate(weekStart.getDate() + 7);
         return weekStart;
@@ -1744,19 +1858,20 @@ async function fetchData() {
         const hours = now.getHours();
         const minutes = now.getMinutes();
         const currentTime = hours * 60 + minutes;
+        const times = periodTimesFor(now);
 
         for (let p = 1; p <= 8; p++) {
-            if (PERIOD_TIMES[p]) {
-                const [startH, startM] = PERIOD_TIMES[p].start.split(':').map(Number);
-                const [endH, endM] = PERIOD_TIMES[p].end.split(':').map(Number);
+            if (times[p]) {
+                const [startH, startM] = times[p].start.split(':').map(Number);
+                const [endH, endM] = times[p].end.split(':').map(Number);
                 const startTime = startH * 60 + startM;
                 const endTime = endH * 60 + endM;
 
                 if (currentTime >= startTime && currentTime < endTime) return p;
                 if (currentTime < startTime) return 0;
 
-                if (PERIOD_TIMES[p] && PERIOD_TIMES[p].breakAfter) {
-                    const breakMin = parseInt(PERIOD_TIMES[p].breakAfter) || 0;
+                if (times[p].breakAfter) {
+                    const breakMin = parseInt(times[p].breakAfter) || 0;
                     const breakEnd = endTime + breakMin;
                     if (currentTime < breakEnd) return p + 0.5;
                 }
@@ -1784,12 +1899,17 @@ async function fetchData() {
             return;
         }
 
+        const displayDate = displayedDate();
         const isToday = selectedDay === new Date().getDay();
+        const times = periodTimesFor(displayDate);
+        const override = dateOverride(displayDate);
+        const event = override && override.events && override.events[0];
         let html = '';
         let total = 0;
 
         for (let p = 1; p <= 8; p++) {
-            const time = PERIOD_TIMES[p] || { start: '', end: '' };
+            const time = times[p];
+            if (!time) continue; // laikino tvarkaraščio dieną pamokų mažiau
             const lessons = [];
             const seen = new Set();
 
@@ -1831,7 +1951,13 @@ async function fetchData() {
             });
         }
 
-        list.innerHTML = total > 0 ? html : '<div class="ml-empty">Šiai dienai pamokų nėra.</div>';
+        // Renginys po pamokų (laikinai pakeisto tvarkaraščio dieną)
+        if (event) {
+            html += `<div class="ml-period">🗣️ <span class="ml-time">${escapeHtml(event.start)}–${escapeHtml(event.end)}</span></div>
+                <div class="ml-event">${event.afterPeriod ? `Po ${event.afterPeriod} pamokų – ` : ''}${escapeHtml(event.title)}</div>`;
+        }
+
+        list.innerHTML = (total > 0 || event) ? html : '<div class="ml-empty">Šiai dienai pamokų nėra.</div>';
     }
 
     function renderTimeline() {
@@ -1839,13 +1965,27 @@ async function fetchData() {
         const table = document.getElementById('timelineTable');
         const tbody = document.getElementById('timelineBody');
 
+        const displayDate = displayedDate();
+        const override = dateOverride(displayDate);
+        const times = periodTimesFor(displayDate);
+        const event = override && override.events && override.events[0];
+        const lastPeriod = times.length - 1; // laikino tvarkaraščio dieną pamokų gali būti mažiau
+        const eventColspan = Math.max(1, 8 - lastPeriod);
+        updateOverrideNotice(override, displayDate);
+
         let headerHTML = '<tr><th class="period-header">Klasė</th>';
-        for (let p = 1; p <= 8; p++) {
-            const time = PERIOD_TIMES[p] || { start: '', end: '' };
+        for (let p = 1; p <= lastPeriod; p++) {
+            const time = times[p];
             headerHTML += `<th class="period-header">
                 <div class="period-num">${p}.</div>
                 <div class="period-time">${time.start}–${time.end}</div>
                 ${time.breakAfter ? `<div class="period-break">${time.breakAfter}min</div>` : ''}
+            </th>`;
+        }
+        if (event) {
+            headerHTML += `<th class="period-header is-event" colspan="${eventColspan}">
+                <div class="period-time">${escapeHtml(event.start)}–${escapeHtml(event.end)}</div>
+                <div class="period-break">${escapeHtml(event.title)}</div>
             </th>`;
         }
         headerHTML += '</tr>';
@@ -1867,7 +2007,7 @@ async function fetchData() {
 
             let rowHTML = `<td>${cls.toUpperCase()}</td>`;
 
-            for (let p = 1; p <= 8; p++) {
+            for (let p = 1; p <= lastPeriod; p++) {
                 let lessons = scheduleByClass[cls]?.[selectedDay]?.filter(l => l.period === p) || [];
 
                 // Apply filters
@@ -1960,6 +2100,14 @@ async function fetchData() {
                 rowHTML += `<td class="${cellClass}">${cellContent}</td>`;
             }
 
+            // Renginys po pamokų užima likusius stulpelius
+            if (event) {
+                rowHTML += `<td class="lesson-cell is-event" colspan="${eventColspan}">
+                    <div class="event-title">🗣️ ${escapeHtml(event.title)}</div>
+                    <div class="event-time">${escapeHtml(event.start)}–${escapeHtml(event.end)}</div>
+                </td>`;
+            }
+
             tr.innerHTML = rowHTML;
             tbody.appendChild(tr);
         });
@@ -1978,6 +2126,26 @@ async function fetchData() {
         }
 
         buildMobileList(currentPeriod);
+    }
+
+    // Pranešimas apie laikiną (vienos dienos) tvarkaraštį
+    function updateOverrideNotice(override, date) {
+        const el = document.getElementById('overrideNotice');
+        if (!el) return;
+        if (!override) {
+            el.style.display = 'none';
+            el.textContent = '';
+            return;
+        }
+
+        const dateText = date.toLocaleDateString('lt-LT', { day: 'numeric', month: 'long' });
+        const parts = [`📌 ${dateText} – ${override.note || 'laikinai pakeistas tvarkaraštis'}`];
+        (override.events || []).forEach(event => {
+            const after = event.afterPeriod ? `po ${event.afterPeriod} pamokų – ` : '';
+            parts.push(`${after}${event.title} ${event.start}–${event.end}`);
+        });
+        el.textContent = parts.join(' · ');
+        el.style.display = 'block';
     }
 
     function updateHeaderDay() {
@@ -2011,11 +2179,13 @@ async function fetchData() {
 
         const labelEl = document.getElementById('countdownLabel');
         const timeEl = document.getElementById('countdownTime');
+        const times = periodTimesFor(new Date(now.getFullYear(), now.getMonth(), now.getDate()));
+        const override = dateOverride(now);
 
         for (let p = 1; p <= 8; p++) {
-            if (PERIOD_TIMES[p]) {
-                const [startH, startM] = PERIOD_TIMES[p].start.split(':').map(Number);
-                const [endH, endM] = PERIOD_TIMES[p].end.split(':').map(Number);
+            if (times[p]) {
+                const [startH, startM] = times[p].start.split(':').map(Number);
+                const [endH, endM] = times[p].end.split(':').map(Number);
                 const startSec = (startH * 60 + startM) * 60;
                 const endSec = (endH * 60 + endM) * 60;
 
@@ -2030,10 +2200,10 @@ async function fetchData() {
                 }
             }
 
-            if (PERIOD_TIMES[p] && PERIOD_TIMES[p].breakAfter) {
-                const [endH, endM] = PERIOD_TIMES[p].end.split(':').map(Number);
+            if (times[p] && times[p].breakAfter) {
+                const [endH, endM] = times[p].end.split(':').map(Number);
                 const endSec = (endH * 60 + endM) * 60;
-                const breakDurationMin = parseInt(PERIOD_TIMES[p].breakAfter) || 0;
+                const breakDurationMin = parseInt(times[p].breakAfter) || 0;
                 const breakEndSec = endSec + (breakDurationMin * 60);
 
                 if (currentSeconds >= endSec && currentSeconds < breakEndSec) {
@@ -2046,6 +2216,22 @@ async function fetchData() {
                     timeEl.dataset.state = 'break';
                     return;
                 }
+            }
+        }
+
+        // Renginys po pamokų (laikinai pakeistas tvarkaraštis)
+        const dayEvent = override && override.events && override.events[0];
+        if (dayEvent) {
+            const [startH, startM] = dayEvent.start.split(':').map(Number);
+            const [endH, endM] = dayEvent.end.split(':').map(Number);
+            const startSec = (startH * 60 + startM) * 60;
+            const endSec = (endH * 60 + endM) * 60;
+
+            if (currentSeconds >= startSec && currentSeconds < endSec) {
+                labelEl.textContent = `🗣️ ${dayEvent.title}`;
+                timeEl.textContent = `iki ${dayEvent.end}`;
+                timeEl.dataset.state = 'break';
+                return;
             }
         }
 
@@ -2196,8 +2382,9 @@ async function fetchData() {
         const now = new Date();
         const today = now.getDay();
         const currentTime = now.getHours() * 60 + now.getMinutes();
+        const todayEnd = schoolEndTimeFor(now);
 
-        if (today >= 1 && today <= 5 && currentTime < SCHOOL_END_TIME) {
+        if (today >= 1 && today <= 5 && currentTime < todayEnd) {
             selectedDay = today;
         } else if (today >= 1 && today <= 4) {
             selectedDay = today + 1;
@@ -2258,7 +2445,7 @@ async function fetchData() {
             const today = now.getDay();
             const currentTime = now.getHours() * 60 + now.getMinutes();
 
-            if (selectedDay === today && currentTime >= SCHOOL_END_TIME) {
+            if (selectedDay === today && currentTime >= schoolEndTimeFor(now)) {
                 if (today >= 1 && today <= 4) {
                     selectedDay = today + 1;
                     buildDaySelector();

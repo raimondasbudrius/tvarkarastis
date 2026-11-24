@@ -89,11 +89,12 @@ kintamųjų rinkinį.
 ## Laikini vienos dienos pakeitimai
 
 Jei vienai dienai pakeičiami pamokų laikai (pvz., lapkričio 18 d. pamokos
-trumpos, o po 6 pamokų vyksta „Trišaliai pokalbiai“), jie įrašomi `index.html`
-failo `DATE_OVERRIDES` objekte pagal datą (`YYYY-MM-DD`). Tokią dieną lentelėje
-ir telefonų sąraše rodomi tos dienos laikai, o po paskutinės pamokos – renginys
-(likusius lentelės stulpelius užima jo laikas). Visos kitos dienos lieka
-įprastos, todėl praėjus dienai įrašą užtenka ištrinti.
+trumpos, o po 6 pamokų vyksta „Trišaliai pokalbiai“, o lapkričio 26 d. – tik
+trumpesnės pamokos), jie įrašomi `index.html` failo `DATE_OVERRIDES` objekte
+pagal datą (`YYYY-MM-DD`). Tokią dieną lentelėje ir telefonų sąraše rodomi tos
+dienos laikai, o po paskutinės pamokos – renginys (jis užima vieno pamokos
+langelio plotį). Visos kitos dienos lieka įprastos, todėl praėjus dienai įrašą
+užtenka ištrinti.
 
 ## Technologijų pamokų medžiaga (micro:bit)
 
